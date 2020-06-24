@@ -37,7 +37,6 @@ namespace Exchange_Art
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,12 +78,12 @@ namespace Exchange_Art
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                if (!await roleManager.RoleExistsAsync("Teacher"))
+                if (!await roleManager.RoleExistsAsync(Roles.TEACHER_ROLE))
                 {
-                    var teacherRole = new IdentityRole("Teacher");
+                    var teacherRole = new IdentityRole(Roles.TEACHER_ROLE);
                     await roleManager.CreateAsync(teacherRole);
 
-                    var studentRole = new IdentityRole("Student");
+                    var studentRole = new IdentityRole(Roles.STUDENT_ROLE);
                     await roleManager.CreateAsync(studentRole);
 
                     var teacher1 = new ApplicationUser
@@ -94,7 +93,7 @@ namespace Exchange_Art
                     };
 
                     await userManager.CreateAsync(teacher1, "HenkIsDeB0m!"); // User created
-                    await userManager.AddToRoleAsync(teacher1, "Teacher"); // Role is added to User
+                    await userManager.AddToRoleAsync(teacher1, Roles.TEACHER_ROLE); // Role is added to User
                 }
             }
         }

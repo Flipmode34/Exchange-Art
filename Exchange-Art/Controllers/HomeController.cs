@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Exchange_Art.Models;
 using Microsoft.AspNetCore.Authorization;
+using Exchange_Art.Data;
 
 namespace Exchange_Art.Controllers
 {
@@ -24,7 +25,7 @@ namespace Exchange_Art.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = Roles.TEACHER_ROLE)]
         public IActionResult Privacy()
         {
             return View();
