@@ -25,7 +25,7 @@ namespace Exchange_Art.Controllers
             return View();
         }
 
-        [Authorize(Roles = Roles.TEACHER_ROLE)]
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();

@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Exchange_Art.Data;
 
 namespace Exchange_Art.Areas.Identity.Pages.Account
 {
@@ -92,8 +91,6 @@ namespace Exchange_Art.Areas.Identity.Pages.Account
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    await _userManager.AddToRoleAsync(user, Roles.STUDENT_ROLE);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
