@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Exchange_Art.Data.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Exchange_Art.Data.Entities;
+using Exchange_Art.Models;
 
 namespace Exchange_Art.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-
         public static bool hasMigrated;
+
+        public ApplicationDbContext()
+        {
+        }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -21,5 +22,8 @@ namespace Exchange_Art.Data
                 hasMigrated = true;
             }
         }
+
+        public DbSet<Art> Art { get; set; }
+
     }
 }
