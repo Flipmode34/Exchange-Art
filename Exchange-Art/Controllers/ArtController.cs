@@ -23,6 +23,12 @@ namespace Exchange_Art.Controllers
             return View(await _context.Art.ToListAsync());
         }
 
+        // GET: Art
+        public async Task<IActionResult> Upload()
+        {
+            return View(await _context.Art.ToListAsync());
+        }
+
         // GET: Art/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -149,7 +155,7 @@ namespace Exchange_Art.Controllers
             ViewBag.ImageTitle = ArtImg.ImageTitle;
             ViewBag.ImageDataUrl = imageDataURL;
             
-            return View("Index");
+            return View("Upload");
         }
 
         // GET: Art/Delete/5

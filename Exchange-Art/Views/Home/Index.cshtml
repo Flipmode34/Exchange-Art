@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<Exchange_Art.Models.Art>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -10,24 +12,22 @@
 <!-- Carousel -->
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
 
-    <!-- Indicators -->
-    <ol class="carousel-indicators">
-        <li data-target="#demo" data-slide-to="0" class="active"></li>
-        <li data-target="#demo" data-slide-to="1"></li>
-        <li data-target="#demo" data-slide-to="2"></li>
-    </ol>
-
     <!-- The slideshow -->
     <div class="carousel-inner">
-        <div class="carousel-item active">
-            <img src="https://www.w3schools.com/bootstrap/la.jpg" alt="Los Angeles" width="1100" height="500" class="image-responsive img-thumbnail">
-        </div>
-        <div class="carousel-item">
-            <img src="https://www.w3schools.com/bootstrap/chicago.jpg" alt="Chicago" width="1100" height="500" class="image-responsive img-thumbnail">
-        </div>
-        <div class="carousel-item">
-            <img src="https://www.w3schools.com/bootstrap/ny.jpg" alt="New York" width="1100" height="500" class="image-responsive img-thumbnail">
-        </div>
+        @{int j = 0;}
+        @foreach (var item in Model)
+        {
+            j++;
+            var active = j == 1 ? "active" : "";
+            var base64 = Convert.ToBase64String(item.ImageData); // Convert byte[] imagedata to string
+            var imgSrc = String.Format("data:image/gif;base64,{0}", base64); // Format imagedata string
+            <div class="carousel-item @active">
+                <img src="@imgSrc" alt="item.ImageTitle" width="1100" height="800" class="image-responsive">
+                <div class="carousel-caption d-none d-md-block">
+                    <h5>@item.ImageTitle</h5>
+                </div>
+            </div>
+        }
     </div>
 
     <!-- Left and right controls -->
