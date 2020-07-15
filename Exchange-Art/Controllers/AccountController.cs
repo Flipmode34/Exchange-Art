@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Exchange_Art.Data.Entities;
 using Exchange_Art.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -10,8 +9,8 @@ namespace Exchange_Art.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private UserManager<ApplicationUser> _userManager;
-        private SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public AccountController(UserManager<ApplicationUser> userMgr, SignInManager<ApplicationUser> signinMgr)
         {

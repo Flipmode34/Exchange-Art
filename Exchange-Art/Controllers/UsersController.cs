@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Exchange_Art.Data.Entities;
 using Exchange_Art.Models;
 using Exchange_Art.Data;
 using Microsoft.AspNetCore.Identity;

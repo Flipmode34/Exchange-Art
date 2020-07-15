@@ -2,19 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Exchange_Art.Models;
-using Microsoft.AspNetCore.Authorization;
-using Exchange_Art.Data;
-using System.IO;
-using System.Net.Mime;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Exchange_Art.Data.Entities;
 
 namespace Exchange_Art.Controllers
 {

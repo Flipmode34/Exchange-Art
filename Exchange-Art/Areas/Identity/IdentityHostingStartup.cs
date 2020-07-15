@@ -1,6 +1,5 @@
 ﻿using System;
-using Exchange_Art.Data;
-using Exchange_Art.Data.Entities;
+using Exchange_Art.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;

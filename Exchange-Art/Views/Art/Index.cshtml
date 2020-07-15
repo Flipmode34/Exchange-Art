@@ -1,0 +1,29 @@
+﻿@model IEnumerable<Exchange_Art.Models.Art>
+
+<h1 class="bg-info text-white">Upload Art pieces</h1>
+
+<form asp-action="UploadArt" asp-controller="Art" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="input-group">
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="file1" name="file1" multiple="multiple">
+                <label class="custom-file-label" for="file1">Choose file(s)</label>
+            </div>
+            <div>
+                <button class="btn btn-primary" type="submit">Upload File(s)</button>
+            </div>
+        </div>
+        
+    </div>
+</form>
+
+<h1>@ViewBag.Message</h1>
+<h1>@ViewBag.ImageTitle</h1>
+<img src="@ViewBag.ImageDataUrl" class="img-fluid" />
+<br />
+<br />
+<form asp-action="RetrieveArt" asp-controller="Art" method="post">
+    <div class="form-group">
+        <button class="btn btn-secondary" type="submit">Show Latest Art image</button>
+    </div>
+</form>

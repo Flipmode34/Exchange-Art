@@ -1,5 +1,4 @@
-﻿using Exchange_Art.Data.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
 namespace Exchange_Art.Models

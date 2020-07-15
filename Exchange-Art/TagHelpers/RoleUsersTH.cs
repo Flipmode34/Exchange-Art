@@ -1,4 +1,4 @@
-﻿using Exchange_Art.Data.Entities;
+﻿using Exchange_Art.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Collections.Generic;

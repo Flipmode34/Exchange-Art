@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Exchange_Art.Data;
-using Exchange_Art.Data.Entities;
 using Exchange_Art.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,8 +12,8 @@ namespace Exchange_Art.Controllers
     public class RoleController : Controller
     {
         // Properties
-        private RoleManager<IdentityRole> _roleManager;
-        private UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         // Constructor
         public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)

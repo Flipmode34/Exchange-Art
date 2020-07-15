@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Exchange_Art.Data.Entities;
 using Exchange_Art.Models;
 using Microsoft.AspNetCore.Identity;
 

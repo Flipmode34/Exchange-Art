@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Exchange_Art.Data;
-using Exchange_Art.Data.Entities;
+using Exchange_Art.Models;
 using Exchange_Art.IdentityPolicy;
 
 namespace Exchange_Art
