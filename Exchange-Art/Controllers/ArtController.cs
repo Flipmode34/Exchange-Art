@@ -26,7 +26,7 @@ namespace Exchange_Art.Controllers
         // GET: Art
         public async Task<IActionResult> Upload()
         {
-            return View(await _context.Art.ToListAsync());
+            return View();
         }
 
         // GET: Art/Details/5
@@ -121,12 +121,12 @@ namespace Exchange_Art.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadArt()
+        public async Task<IActionResult> UploadArt(string title1)
         {
             foreach (var file in Request.Form.Files)
             {
                 Art ArtImg = new Art();
-                ArtImg.ImageTitle = file.FileName;
+                ArtImg.ImageTitle = title1;
 
                 MemoryStream ms = new MemoryStream();
                 file.CopyTo(ms);
@@ -141,7 +141,7 @@ namespace Exchange_Art.Controllers
             
             ViewBag.Message = "Art piece stored in database!";
             
-            return View("Index");
+            return View("Upload");
         }
 
         [HttpPost]

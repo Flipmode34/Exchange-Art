@@ -1,19 +1,37 @@
 ﻿@model IEnumerable<Exchange_Art.Models.Art>
 
-<h1 class="bg-dark text-white">Upload Art pieces</h1>
+<h1 class="bg-dark text-white">Upload Art</h1>
 
 <form asp-action="UploadArt" asp-controller="Art" method="post" enctype="multipart/form-data">
     <div class="form-group">
+        <!--Select file to upload-->
         <div class="input-group">
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="file1" name="file1" multiple="multiple">
-                <label class="custom-file-label" for="file1">Choose file(s)</label>
+            <div class="input-group-prepend">
+                <span class="input-group-text">Upload</span>
             </div>
-            <div>
-                <button class="btn btn-primary" type="submit">Upload File(s)</button>
+            <div class="custom-file">
+                <label class="custom-file-label" for="file1">Click me to choose file</label>
+                <input type="file" class="custom-file-input" id="file1" name="file1">
             </div>
         </div>
-        
+        <br />
+        <!--Set title-->
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Title</span>
+            </div>
+            <input type="text" class="form-control" id="title1" name="title1" placeholder="...">
+        </div>
+        <br />
+        <!--Set description-->
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Description</span>
+            </div>
+            <textarea type="text" class="form-control" id="description1" name="description1" placeholder="..."></textarea>
+        </div>
+        <br />
+        <button class="btn btn-primary" type="submit">Upload File</button>
     </div>
 </form>
 

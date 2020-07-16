@@ -5,12 +5,13 @@
     <thead>
         <tr>
             <th>
-                Art Images
-                @*@Html.DisplayNameFor(model => model.ImageTitle)*@
+                Art Image
             </th>
             <th>
-                Action
-                @*@Html.DisplayNameFor(model => model.ImageData)*@
+                Owner
+            </th>
+            <th>
+                Actions
             </th>
             <th></th>
         </tr>
@@ -31,22 +32,11 @@
                 </div>
             </td>
             <td>
-                <a class="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-            <!--<td>-->
-                @*@Html.DisplayFor(modelItem => item.ImageTitle)
+
             </td>
             <td>
-                @{
-                    var base64 = Convert.ToBase64String(item.ImageData);
-                    var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                }*@
-                @*<img src="@imgSrc" class="img-fluid"/>*@
-                @*@Html.DisplayFor(modelItem => item.ImageData)*@
-            <!--</td>
-            <td> |-->
-                @*<a class="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
-            <!--</td>-->
+                <a class="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
         </tr>
 }
     </tbody>
