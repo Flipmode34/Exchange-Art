@@ -24,7 +24,7 @@ namespace Exchange_Art.Controllers
         }
 
         // GET: Art
-        public async Task<IActionResult> Upload()
+        public IActionResult Upload()
         {
             return View();
         }
@@ -121,12 +121,13 @@ namespace Exchange_Art.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadArt(string title1)
+        public async Task<IActionResult> UploadArt(string title1, string description1)
         {
             foreach (var file in Request.Form.Files)
             {
                 Art ArtImg = new Art();
                 ArtImg.ImageTitle = title1;
+                ArtImg.ImageDescription = description1;
 
                 MemoryStream ms = new MemoryStream();
                 file.CopyTo(ms);
