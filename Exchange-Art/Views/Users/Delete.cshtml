@@ -1,0 +1,33 @@
+﻿@using Exchange_Art.Models
+@model ApplicationUser
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Delete</title>
+</head>
+
+<body>
+
+    <h3 class="bg-dark text-light rounded text-center">Are you sure?</h3>
+    <div>
+        <dl class="row">
+            <dt class="col-sm-2">
+                Username:
+            </dt>
+            <dt class="col-sm-2">
+                @Model.UserName
+            </dt>
+        </dl>
+
+        <form asp-action="DeleteConfirmed">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a asp-action="Index">Back to List</a>
+        </form>
+    </div>
+
+</body>
+</html>

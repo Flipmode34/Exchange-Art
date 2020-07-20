@@ -1,43 +1,55 @@
-﻿@model IEnumerable<Exchange_Art.Models.Art>
+﻿@using System.Security.Claims;
 
+@model IEnumerable<Exchange_Art.Models.Art>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Art Image
-            </th>
-            <th>
-                Owner
-            </th>
-            <th>
-                Actions
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @{
-                    var base64 = Convert.ToBase64String(item.ImageData);
-                    var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                }
-                <div class="media">
-                    <img class="align-self-start mr-3 img-fluid" src="@imgSrc" alt="item.ImageTitle" width="192px" height="108px">
-                    <div class="media-body">
-                        <h5 class="mt-0">@item.ImageTitle</h5>
-                    </div>
-                </div>
-            </td>
-            <td>
+<h1 class="bg-dark text-white rounded text-center">Art Overview</h1>
 
-            </td>
-            <td>
-                <a class="button" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Art Image
+                </th>
+                <th>
+                    Owner
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @{
+                            var base64 = Convert.ToBase64String(item.ImageData);
+                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                        }
+                        <div class="media">
+                            <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
+                            <div class="media-body">
+                                <h6 class="mt-0">@item.ImageTitle</h6>
+                                <p class="mt-0">@item.ImageDescription</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            @{
+                                var userId = this.User.FindFirstValue(ClaimTypes.Name);
+                                <p class="mt-0">@item.OwnerName</p>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <a class="btn btn-link" asp-action="Lease" asp-route-id="@item.Id">Lease</a> |
+                        <a class="btn btn-link" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

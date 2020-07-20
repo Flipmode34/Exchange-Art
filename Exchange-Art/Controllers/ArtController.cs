@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Exchange_Art.Models;
 using System.IO;
 using System;
+using Microsoft.AspNetCore.Authorization;
+using Exchange_Art.Data;
 
 namespace Exchange_Art.Controllers
 {
@@ -121,13 +123,15 @@ namespace Exchange_Art.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadArt(string title1, string description1)
+        public async Task<IActionResult> UploadArt(string title1, string description1, string owner1, string username1)
         {
-            foreach (var file in Request.Form.Files)
+            foreach (var file in Request.Form.Files) // In case of multiple files
             {
                 Art ArtImg = new Art();
                 ArtImg.ImageTitle = title1;
                 ArtImg.ImageDescription = description1;
+                ArtImg.UserId = owner1;
+                ArtImg.OwnerName = username1;
 
                 MemoryStream ms = new MemoryStream();
                 file.CopyTo(ms);
@@ -139,7 +143,14 @@ namespace Exchange_Art.Controllers
                 _context.Art.Add(ArtImg);
                 await _context.SaveChangesAsync();
             }
-            
+
+            Art ArtImage = _context.Art.OrderByDescending(i => i.Id).FirstOrDefault();
+
+            string imageBase64Data = Convert.ToBase64String(ArtImage.ImageData);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+
+            ViewBag.ImageTitle = ArtImage.ImageTitle;
+            ViewBag.ImageDataUrl = imageDataURL;
             ViewBag.Message = "Art piece stored in database!";
             
             return View("Upload");
@@ -160,6 +171,7 @@ namespace Exchange_Art.Controllers
         }
 
         // GET: Art/Delete/5
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

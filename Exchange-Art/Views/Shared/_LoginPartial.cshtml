@@ -8,13 +8,11 @@
     @if (SignInManager.IsSignedIn(User))
     {
     <li class="nav-item">
-        <!--Get User Id of logged in user, for use in Anchor element below-->
         @{
+            // Get User Id of logged in user, for use in HTML anchor element below
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Update" asp-route-id="@userId" title="Update">Hello @User.Identity.Name!</a>
         }
-
-
     </li>
         @if (User?.Identity?.IsAuthenticated ?? false)
         {

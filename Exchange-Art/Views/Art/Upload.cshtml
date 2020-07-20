@@ -1,6 +1,8 @@
-﻿@model IEnumerable<Exchange_Art.Models.Art>
+﻿@using System.Security.Claims;
 
-<h1 class="bg-dark text-white">Upload Art</h1>
+@model IEnumerable<Exchange_Art.Models.Art>
+
+<h1 class="bg-dark text-white rounded text-center">Upload Art</h1>
 
 <form asp-action="UploadArt" asp-controller="Art" method="post" enctype="multipart/form-data">
     <div class="form-group">
@@ -10,7 +12,7 @@
                 <span class="input-group-text">Upload</span>
             </div>
             <div class="custom-file">
-                <label class="custom-file-label" for="file1">Click me to choose file</label>
+                <label class="custom-file-label" for="file1">Click me to choose (Art)file</label>
                 <input type="file" class="custom-file-input" id="file1" name="file1">
             </div>
         </div>
@@ -30,18 +32,28 @@
             </div>
             <textarea type="text" class="form-control" id="description1" name="description1" placeholder="..."></textarea>
         </div>
+        <!--Set owner, is a hidden HTML element-->
+        <div class="input-group" hidden>
+            <div class="input-group-prepend">
+                <span class="input-group-text">Art Owner</span>
+            </div>
+            @{
+                // Get UserId of logged in User = Owner of ArtPiece
+                var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userName = this.User.FindFirstValue(ClaimTypes.Name);
+                <input type="text" class="form-control" id="owner1" name="owner1" value="@userId" readonly>
+                <input type="text" class="form-control" id="username1" name="username1" value="@userName" readonly>
+            }
+        </div>
         <br />
-        <button class="btn btn-primary" type="submit">Upload File</button>
+        <button class="btn btn-primary" type="submit">Upload Art</button>
     </div>
 </form>
 
-<h1>@ViewBag.Message</h1>
-<h1>@ViewBag.ImageTitle</h1>
-<img src="@ViewBag.ImageDataUrl" class="img-fluid" />
-<br />
-<br />
-<form asp-action="RetrieveArt" asp-controller="Art" method="post">
-    <div class="form-group">
-        <button class="btn btn-secondary" type="submit">Show Latest Art image uploaded</button>
-    </div>
-</form>
+<div class="alert alert-success" role="alert">
+    <h1 class="alert-heading rounded">@ViewBag.Message</h1>
+    <hr />
+    <h3>@ViewBag.ImageTitle</h3>
+    <img src="@ViewBag.ImageDataUrl" class="img-fluid rounded" />
+</div>
+

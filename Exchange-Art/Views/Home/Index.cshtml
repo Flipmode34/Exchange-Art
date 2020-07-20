@@ -5,15 +5,15 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4 text-dark">Welcome</h1>
-    <p>Exchange art with other <a asp-area="" asp-controller="Users" asp-action="Index">people</a> online.</p>
+    <h1 class="display-2 text-dark">Welcome</h1>
+    <p>Exchange <a asp-area="" asp-controller="Art" asp-action="Index">art</a> with other <a asp-area="" asp-controller="Users" asp-action="Index">people</a> online.</p>
 </div>
 
 <!-- Carousel -->
 <div id="myCarousel" class="carousel slide" data-ride="carousel">
 
     <!-- The slideshow -->
-    <div class="carousel-inner">
+    <div class="carousel-inner rounded">
         @{int j = 0;}
         @foreach (var item in Model)
         {
@@ -21,10 +21,11 @@
             var active = j == 1 ? "active" : "";
             var base64 = Convert.ToBase64String(item.ImageData); // Convert byte[] imagedata to string
             var imgSrc = String.Format("data:image/gif;base64,{0}", base64); // Format imagedata string
-            <div class="carousel-item @active">
-                <img src="@imgSrc" alt="item.ImageTitle" width="1100" height="800" class="image-responsive">
+            <div class="carousel-item rounded @active">
+                <img src="@imgSrc" alt="item.ImageTitle" width="100%" height="800" class="image-responsive rounded center-block">
                 <div class="carousel-caption d-none d-md-block">
                     <h5>@item.ImageTitle</h5>
+                    <p>@item.ImageDescription</p>
                 </div>
             </div>
         }

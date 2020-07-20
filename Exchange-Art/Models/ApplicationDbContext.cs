@@ -5,8 +5,6 @@ namespace Exchange_Art.Models
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        //public static bool hasMigrated;
-
         public ApplicationDbContext()
         {
         }
@@ -14,14 +12,11 @@ namespace Exchange_Art.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-            //if (!hasMigrated)
-            //{
-            //    Database.Migrate();
-            //    hasMigrated = true;
-            //}
         }
 
+        // Represents the tables of the Models (Art & ArtLease) in the Database
         public DbSet<Art> Art { get; set; }
+        public DbSet<ArtLease> ArtLease { get; set; }
 
     }
 }

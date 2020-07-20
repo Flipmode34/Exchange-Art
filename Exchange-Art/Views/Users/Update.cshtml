@@ -1,23 +1,68 @@
 ﻿@using Exchange_Art.Models
-@model ApplicationUser
+@model ArtOwners
 
-<h1 class="bg-dark text-white">Update User @Model.UserName</h1>
+<h1 class="bg-dark text-white rounded text-center">Update User @Model.ArtOwner.UserName</h1>
 <div asp-validation-summary="All" class="text-danger"></div>
 
 <form asp-action="Update" method="post">
     <div class="form-group">
-        <label asp-for="Id"></label>
-        <input asp-for="Id" class="form-control" disabled />
+        <label asp-for="@Model.ArtOwner.Id"></label>
+        <input asp-for="@Model.ArtOwner.Id" class="form-control" disabled />
     </div>
     <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
+        <label asp-for="@Model.ArtOwner.Email"></label>
+        <input asp-for="@Model.ArtOwner.Email" class="form-control" />
     </div>
     <div class="form-group">
         <label for="password">Password</label>
-        <input name="password" class="form-control" />
+        <input type="password" name="password" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
-
     <a asp-action="Index" class="btn btn-secondary">Back</a>
 </form>
+
+<br />
+<br />
+<h3 class="bg-dark text-white rounded text-center">Art owned you</h3>
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Art Image
+            </th>
+            <th>
+                Owner
+            </th>
+            <th>
+                Leased (Y/N)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Art art in Model.ArtPieces)
+        {
+            <tr>
+                <td>
+                    @{
+                        var base64 = Convert.ToBase64String(art.ImageData);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    }
+                    <div class="media">
+                        <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
+                        <div class="media-body">
+                            <h6 class="mt-0">@art.ImageTitle</h6>
+                            <p class="mt-0">@art.ImageDescription</p>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <p class="mt-0">@Model.ArtOwner.UserName</p>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -4,14 +4,16 @@ using Exchange_Art.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Exchange_Art.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200716213903_ChangedArtAndUserModels")]
+    partial class ChangedArtAndUserModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,17 +103,8 @@ namespace Exchange_Art.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("LeasePrice")
-                        .HasColumnType("float");
-
-                    b.Property<bool>("Leased")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UserId")
-                        .HasColumnName("OwnerId")
+                        .HasColumnName("Owner")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -119,55 +112,6 @@ namespace Exchange_Art.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Art");
-                });
-
-            modelBuilder.Entity("Exchange_Art.Models.ArtLease", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ArtId")
-                        .HasColumnName("ArtPiece")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ArtPieceId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("CryptoAmount")
-                        .HasColumnName("LeaseAmount")
-                        .HasColumnType("float");
-
-                    b.Property<int>("LeaseDaysleft")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LeasePeriod")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LeaseUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("LeaserId")
-                        .HasColumnName("ArtLeaser")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnName("ArtOwner")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArtPieceId");
-
-                    b.HasIndex("LeaseUserId");
-
-                    b.HasIndex("OwnerUserId");
-
-                    b.ToTable("ArtLease");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -306,21 +250,6 @@ namespace Exchange_Art.Migrations
                     b.HasOne("Exchange_Art.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Exchange_Art.Models.ArtLease", b =>
-                {
-                    b.HasOne("Exchange_Art.Models.Art", "ArtPiece")
-                        .WithMany()
-                        .HasForeignKey("ArtPieceId");
-
-                    b.HasOne("Exchange_Art.Models.ApplicationUser", "LeaseUser")
-                        .WithMany()
-                        .HasForeignKey("LeaseUserId");
-
-                    b.HasOne("Exchange_Art.Models.ApplicationUser", "OwnerUser")
-                        .WithMany()
-                        .HasForeignKey("OwnerUserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

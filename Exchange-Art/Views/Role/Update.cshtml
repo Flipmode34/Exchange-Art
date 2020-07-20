@@ -1,7 +1,7 @@
 ﻿@using Exchange_Art.Models
 @model RoleEdit
 
-<h1 class="bg-dark text-white">Update Role</h1>
+<h1 class="bg-dark text-white rounded text-center">Update Role</h1>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -9,7 +9,7 @@
     <input type="hidden" name="roleName" value="@Model.Role.Name" />
     <input type="hidden" name="roleId" value="@Model.Role.Id" />
 
-    <h2 class="bg-info p-1 text-white">Add To @Model.Role.Name</h2>
+    <h2 class="bg-info p-1 text-white rounded text-center">Add To @Model.Role.Name</h2>
     <table class="table table-bordered table-sm">
         @if (Model.NonMembers.Count() == 0)
         {
@@ -29,7 +29,7 @@
         }
     </table>
 
-    <h2 class="bg-info p-1 text-white">Remove From @Model.Role.Name</h2>
+    <h2 class="bg-info p-1 text-white rounded text-center">Remove From @Model.Role.Name</h2>
     <table class="table table-bordered table-sm">
         @if (Model.Members.Count() == 0)
         {

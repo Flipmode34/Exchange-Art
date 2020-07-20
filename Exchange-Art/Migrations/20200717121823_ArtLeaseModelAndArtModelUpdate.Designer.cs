@@ -4,14 +4,16 @@ using Exchange_Art.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Exchange_Art.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200717121823_ArtLeaseModelAndArtModelUpdate")]
+    partial class ArtLeaseModelAndArtModelUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -104,14 +106,8 @@ namespace Exchange_Art.Migrations
                     b.Property<double>("LeasePrice")
                         .HasColumnType("float");
 
-                    b.Property<bool>("Leased")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OwnerName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UserId")
-                        .HasColumnName("OwnerId")
+                        .HasColumnName("Owner")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");

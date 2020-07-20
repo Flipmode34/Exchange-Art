@@ -1,26 +1,24 @@
 ﻿@using Exchange_Art.Models
 @model IEnumerable<ApplicationUser>
 
-<h1 class="bg-dark text-white">All Users</h1>
+<h1 class="bg-dark text-white rounded text-center">All Users</h1>
 
-<table class="table table-sm table-bordered">
-    <tr><th>Id</th><th>Name</th><th>Email</th><th>Update</th><th>Delete</th></tr>
-    @foreach (ApplicationUser user in Model)
-    {
-        <tr>
-            <td>@user.Id</td>
-            <td>@user.UserName</td>
-            <td>@user.Email</td>
-            <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a></td>
-            <td>
-                <form asp-action="Delete" asp-route-id="@user.Id" method="post">
-                    <button type="submit" class="btn btn-sm btn-danger">
-                        Delete
-                    </button>
-                </form>
-            </td>
-        </tr>
-    }
-</table>
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <tr><th>Id</th><th>Name</th><th>Email</th><th>Update</th><th>Delete</th></tr>
+        @foreach (ApplicationUser user in Model)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a></td>
+                <td>
+                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
 
 <a asp-action="Create" class="btn btn-primary">Create a User</a>

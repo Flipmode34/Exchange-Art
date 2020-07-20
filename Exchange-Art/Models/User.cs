@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Exchange_Art.Models
 {
+    /*
+     * Class that sits on top of the ApplicationUser class,
+     * to be able to get a login form that just takes
+     * a name, emailadres and password.
+     */
     public class User
     {
         [Required]
@@ -16,7 +19,5 @@ namespace Exchange_Art.Models
         [Required]
         public string Password { get; set; }
 
-        [ForeignKey("UserId")]
-        public ICollection<Art> ArtCollection { get; set; }
     }
 }

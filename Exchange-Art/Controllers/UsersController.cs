@@ -4,17 +4,20 @@ using Exchange_Art.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace Exchange_Art.Controllers
 {
     public class UsersController : Controller
     {
         private UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
         private IPasswordHasher<ApplicationUser> _passwordHash;
 
-        public UsersController(UserManager<ApplicationUser> userManager, IPasswordHasher<ApplicationUser> passwordHash)
+        public UsersController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IPasswordHasher<ApplicationUser> passwordHash)
         {
             _userManager = userManager;
+            _context = context;
             _passwordHash = passwordHash;
         }
 
@@ -31,11 +34,13 @@ namespace Exchange_Art.Controllers
         // POST:
         // Create a new User
         [HttpPost]
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
         public async Task<IActionResult> Create(User user)
         {
             if (ModelState.IsValid)
             {
+                // Here the data from the User class is used,
+                // to create an actual user from the ApplicationUser class,
+                // that derives from the IdentityUser class.
                 ApplicationUser appUser = new ApplicationUser
                 {
                     UserName = user.Name,
@@ -58,9 +63,21 @@ namespace Exchange_Art.Controllers
         [Authorize]
         public async Task<IActionResult> Update(string id)
         {
+            ArtOwners artowner = new ArtOwners();
+            
             ApplicationUser user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-                return View(user);
+
+            artowner.ArtOwner = user;
+
+            // Query for ArtOwners in 'Art' table
+            var owners = from o in _context.Art
+                         where o.OwnerName.Equals(user.UserName)
+                         select o;
+
+            artowner.ArtPieces = owners;
+
+            if (artowner != null)
+                return View(artowner);
             else
                 return RedirectToAction("Index");
         }
@@ -98,11 +115,22 @@ namespace Exchange_Art.Controllers
             return View(user);
         }
 
+        // GET: Users/Delete/23d3d-d3d3f-d33d2-d23f3-35geg
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        public async Task<IActionResult> Delete(string id)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(id);
+            if (user != null)
+                return View(user);
+            else
+                return RedirectToAction("Index");
+        }
+
         // POST:
         // Delete a user
         [HttpPost]
-        [Authorize(Roles.ADMIN_ROLE)]
-        public async Task<IActionResult> Delete(string id)
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(id);
             if (user != null)

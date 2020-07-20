@@ -6,13 +6,20 @@ namespace Exchange_Art.Models
     public class Art
     {
         public int Id { get; set; }
+        
         [Required]
         public string ImageTitle { get; set; }
-        public string ImageDescription { get; set; } //TODO: add column in database table
+        public string ImageDescription { get; set; }
         
-        [Column("Owner")]
-        public int UserId { get; set; } //TODO: add column in database table
-        public User User { get; set; }
+        [ForeignKey("ApplicationUser"), Column("OwnerId")]
+        public string UserId { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
+
+        public string OwnerName { get; set; }
+
+        public double LeasePrice { get; set; } // Set LeasePrice in the LeaseController
+
+        public bool Leased { get; set; }
 
         public byte[] ImageData { get; set; }
     }
