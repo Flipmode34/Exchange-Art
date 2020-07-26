@@ -9,6 +9,7 @@ namespace Exchange_Art.Models
      */
     public class User
     {
+
         [Required]
         public string Name { get; set; }
 

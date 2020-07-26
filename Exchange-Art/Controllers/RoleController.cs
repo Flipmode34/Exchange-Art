@@ -48,7 +48,7 @@ namespace Exchange_Art.Controllers
         }
 
         // GET:
-        // Update a role
+        // Update a role page
         [Authorize(Roles = Roles.ADMIN_ROLE)]
         public async Task<IActionResult> Update(string id)
         {

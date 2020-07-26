@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,20 +25,30 @@ namespace Exchange_Art
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add DatabaseContext service
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<IPasswordValidator<ApplicationUser>, CustomPasswordPolicy>();
+            // Add Identity service
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-               {
-                   options.User.RequireUniqueEmail = true;
-               }
-            ).AddEntityFrameworkStores<ApplicationDbContext>();
+                options.User.RequireUniqueEmail = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddControllersWithViews();
+            services.AddTransient<IPasswordValidator<ApplicationUser>, CustomPasswordPolicy>();
+
+            // Add Cookie expiration service
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.Name = ".AspNetCore.Identity.Application";
+                options.LoginPath = "/Account/Login";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                options.SlidingExpiration = true; // Expires cookie
+            });
 
             services.AddRazorPages();
+
+            services.AddControllersWithViews();
 
         }
 
@@ -56,10 +62,11 @@ namespace Exchange_Art
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -75,62 +82,7 @@ namespace Exchange_Art
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
-            //await EnsuresRolesAndUsers(app);
         }
 
-        private static async Task EnsuresRolesAndUsers(IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.CreateScope())
-            {
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-
-                if (!await roleManager.RoleExistsAsync(Roles.TEACHER_ROLE))
-                {
-                    var teacherRole = new IdentityRole(Roles.TEACHER_ROLE);
-                    await roleManager.CreateAsync(teacherRole);
-
-                    var studentRole = new IdentityRole(Roles.STUDENT_ROLE);
-                    await roleManager.CreateAsync(studentRole);
-
-                    // Reference new Teacher users
-                    var teacher0 = new ApplicationUser
-                    {
-                        UserName = "Henk@henk.nl",
-                        Email = "Henk@henk.nl"
-                    };
-
-                    var teacher1 = new ApplicationUser
-                    {
-                        UserName = "Marie@marie.nl",
-                        Email = "Marie@marie.nl"
-                    };
-
-                    var teacher2 = new ApplicationUser
-                    {
-                        UserName = "Erik@erik.nl",
-                        Email = "Erik@erik.nl"
-                    };
-
-                    var teacher3 = new ApplicationUser
-                    {
-                        UserName = "Sara@sara.nl",
-                        Email = "Sara@sara.nl"
-                    };
-
-                    // Create actual user with passwords
-                    await userManager.CreateAsync(teacher0, "HenkIsDeB0m!");
-                    await userManager.CreateAsync(teacher1, "MarieIsDeB0m!");
-                    await userManager.CreateAsync(teacher2, "ErikIsDeB0m!");
-                    await userManager.CreateAsync(teacher3, "SaraIsDeB0m!");
-
-                    // Add teacher role to user
-                    await userManager.AddToRoleAsync(teacher0, Roles.TEACHER_ROLE);
-                    await userManager.AddToRoleAsync(teacher1, Roles.TEACHER_ROLE);
-                    await userManager.AddToRoleAsync(teacher2, Roles.TEACHER_ROLE);
-                    await userManager.AddToRoleAsync(teacher3, Roles.TEACHER_ROLE);
-                }
-            }
-        }
     }
 }

@@ -5,32 +5,32 @@
 
 @model IEnumerable<IdentityRole>
 
-<h1 class="bg-dark text-white rounded">All Roles</h1>
+<h1 class="bg-dark text-white rounded text-center">All Roles</h1>
 
 <div class="table-responsive">
     <table class="table table-sm table-hover">
         <tr>
-            <th>Id</th>
             <th>Role Name</th>
-            <th>Users</th>
+            <th>Users Part Of Role</th>
+            <th>Role Id</th>
             <th>Update</th>
             <th>Delete</th>
         </tr>
         @foreach (var role in Model)
         {
-            <tr>
-                <td>@role.Id</td>
-                <td>@role.Name</td>
-                <td i-role="@role.Id"></td>
-                <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@role.Id">Update</a></td>
-                <td>
-                    <form asp-controller="Role" asp-action="Delete" asp-route-id="@role.Id" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
+    <tr>
+        <td>@role.Name</td>
+        <td i-role="@role.Id"></td>
+        <td>@role.Id</td>
+        <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@role.Id">Update</a></td>
+        <td>
+            <form asp-controller="Role" asp-action="Delete" asp-route-id="@role.Id" method="post">
+                <button type="submit" class="btn btn-sm btn-danger">
+                    Delete
+                </button>
+            </form>
+        </td>
+    </tr>
         }
     </table>
 </div>

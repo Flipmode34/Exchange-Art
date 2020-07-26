@@ -1,38 +1,62 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Exchange_Art.Models;
-using System.IO;
-using System;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Exchange_Art.Data;
+using Exchange_Art.Models;
 
 namespace Exchange_Art.Controllers
 {
     public class ArtController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private UserManager<ApplicationUser> _userManager;
 
-        public ArtController(ApplicationDbContext context)
+        public ArtController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        // GET: Art
+        // GET: Art Index page
         public async Task<IActionResult> Index()
         {
             return View(await _context.Art.ToListAsync());
         }
 
-        // GET: Art
+        // GET: Art Upload page
         public IActionResult Upload()
         {
             return View();
         }
 
         // GET: Art/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var art = await _context.Art
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (art == null)
+            {
+                return NotFound();
+            }
+
+            return View(art);
+        }
+
+        // GET: Art/Lease/5
+        [Authorize]
+        public async Task<IActionResult> Lease(int? id)
         {
             if (id == null)
             {
@@ -72,6 +96,7 @@ namespace Exchange_Art.Controllers
         }
 
         // GET: Art/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,7 +109,16 @@ namespace Exchange_Art.Controllers
             {
                 return NotFound();
             }
-            return View(art);
+
+            var UserId = _userManager.GetUserId(User); // Get logged-in User
+            if (art != null && art.UserId == UserId) // Only the Owner may edit his own ArtPiece
+            {
+                return View(art);
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
         }
 
         // POST: Art/Edit/5
@@ -92,7 +126,7 @@ namespace Exchange_Art.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageTitle,ImageData")] Art art)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageTitle,ImageDescription,ImageData,UserId,OwnerName,LeasePrice")] Art art)
         {
             if (id != art.Id)
             {
@@ -120,6 +154,20 @@ namespace Exchange_Art.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(art);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetLeasePrice(int id1, double number1)
+        {
+            Art ArtPiece = await _context.Art.FindAsync(id1);
+            ArtPiece.LeasePrice = number1;
+            await _context.SaveChangesAsync();
+
+            ViewBag.ImageTitle = ArtPiece.ImageTitle;
+            ViewBag.LeasePrice = number1;
+            ViewBag.Message = "Lease price stored in database!";
+
+            return View("Details");
         }
 
         [HttpPost]

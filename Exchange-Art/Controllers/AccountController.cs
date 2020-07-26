@@ -26,9 +26,11 @@ namespace Exchange_Art.Controllers
         // GET:
         // Login User page
         [AllowAnonymous]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl)
         {
-            return View();
+            Login login = new Login();
+            login.ReturnUrl = returnUrl;
+            return View(login);
         }
 
         // POST:

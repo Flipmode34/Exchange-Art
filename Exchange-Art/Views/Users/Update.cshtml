@@ -23,46 +23,67 @@
 
 <br />
 <br />
-<h3 class="bg-dark text-white rounded text-center">Art owned you</h3>
+<h2 class="bg-dark text-white rounded text-center">Art owned you</h2>
 <br />
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Art Image
-            </th>
-            <th>
-                Owner
-            </th>
-            <th>
-                Leased (Y/N)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (Art art in Model.ArtPieces)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @{
-                        var base64 = Convert.ToBase64String(art.ImageData);
-                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                    }
-                    <div class="media">
-                        <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
-                        <div class="media-body">
-                            <h6 class="mt-0">@art.ImageTitle</h6>
-                            <p class="mt-0">@art.ImageDescription</p>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div>
-                        <p class="mt-0">@Model.ArtOwner.UserName</p>
-                    </div>
-                </td>
+                <th>
+                    Art Image
+                </th>
+                <th>
+                    Lease Price
+                </th>
+                <th>
+                    Availability
+                </th>
+                <th>
+                    Actions
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (Art art in Model.ArtPieces)
+            {
+                <tr>
+                    <td>
+                        @{
+                            var base64 = Convert.ToBase64String(art.ImageData);
+                            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                        }
+                        <div class="media">
+                            <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
+                            <div class="media-body">
+                                <h6 class="mt-0">@art.ImageTitle</h6>
+                                <p class="mt-0">@art.ImageDescription</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <p class="mt-0">@art.LeasePrice </p>
+                        </div>
+                    </td>
+                    @{
+                        if (art.Leased == false)
+                        {
+                            string Leased = "Available";
+                            <td>@Leased</td>
+                        }
+                        else
+                        {
+                            string Leased = "Not available";
+                            <td>@Leased</td>
+                        }
+                    }
+                    <td>
+                        <a class="btn btn-link" asp-controller="Art" asp-action="Details" asp-route-id="@art.Id">Details</a> |
+                        <a class="btn btn-link" asp-controller="Art" asp-action="Delete" asp-route-id="@art.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

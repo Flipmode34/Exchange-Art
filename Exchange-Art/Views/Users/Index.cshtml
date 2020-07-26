@@ -1,22 +1,27 @@
-﻿@using Exchange_Art.Models
+﻿@using Microsoft.AspNetCore.Identity
+@using Exchange_Art.Models
 @model IEnumerable<ApplicationUser>
+@inject UserManager<ApplicationUser> UserManager
 
 <h1 class="bg-dark text-white rounded text-center">All Users</h1>
 
 <div class="table-responsive">
     <table class="table table-sm table-hover">
-        <tr><th>Id</th><th>Name</th><th>Email</th><th>Update</th><th>Delete</th></tr>
+        <tr><th>Name</th><th>Email</th><th>Role</th><th>User Id</th><th>Update</th><th>Delete</th></tr>
         @foreach (ApplicationUser user in Model)
         {
-            <tr>
-                <td>@user.Id</td>
-                <td>@user.UserName</td>
-                <td>@user.Email</td>
-                <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a></td>
-                <td>
-                    <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-                </td>
-            </tr>
+            var AppUser = await UserManager.FindByIdAsync(user.Id);
+            var roles = await UserManager.GetRolesAsync(AppUser);
+    <tr>
+        <td>@user.UserName</td>
+        <td>@user.Email</td>
+        <td>@roles[0]</td>
+        <td>@user.Id</td>
+        <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a></td>
+        <td>
+            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+        </td>
+    </tr>
         }
     </table>
 </div>

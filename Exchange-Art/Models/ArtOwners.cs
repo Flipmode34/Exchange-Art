@@ -2,7 +2,7 @@
 
 namespace Exchange_Art.Models
 {
-    // This is a ViewModel class for the GET: Upload method
+    // This is a ViewModel class for the GET: Update Action in the UsersController
     public class ArtOwners
     {
         public ApplicationUser ArtOwner { get; set; }

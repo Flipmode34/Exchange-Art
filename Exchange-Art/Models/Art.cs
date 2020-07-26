@@ -17,7 +17,7 @@ namespace Exchange_Art.Models
 
         public string OwnerName { get; set; }
 
-        public double LeasePrice { get; set; } // Set LeasePrice in the LeaseController
+        public double LeasePrice { get; set; }
 
         public bool Leased { get; set; }
 

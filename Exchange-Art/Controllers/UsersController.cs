@@ -24,6 +24,7 @@ namespace Exchange_Art.Controllers
         [Authorize]
         public IActionResult Index()
         {
+
             return View(_userManager.Users);
         }
 
@@ -59,7 +60,7 @@ namespace Exchange_Art.Controllers
             return View(user);
         }
         // GET:
-        // Update a user
+        // Update a user page
         [Authorize]
         public async Task<IActionResult> Update(string id)
         {
@@ -76,9 +77,15 @@ namespace Exchange_Art.Controllers
 
             artowner.ArtPieces = owners;
 
-            if (artowner != null)
+            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
+            var UserId = _userManager.GetUserId(User);
+
+            // Check if ArtOwner object is not NULL and whether the user that is trying to access the update profile page
+            // is the correct user.
+            if (artowner != null && user.Id == UserId)
                 return View(artowner);
             else
+
                 return RedirectToAction("Index");
         }
 

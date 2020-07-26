@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="NewFolder\**" />
-    <Content Remove="NewFolder\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
-    <None Remove="NewFolder\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="Areas\Identity\Pages\Account\AccessDenied.cshtml.cs" />
     <Compile Remove="Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml.cs" />
     <Compile Remove="Areas\Identity\Pages\Account\Manage\Index.cshtml.cs" />
@@ -51,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Pages\Account\Manage\" />
+    <Folder Include="Authorization\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
