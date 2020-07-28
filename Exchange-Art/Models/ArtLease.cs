@@ -1,30 +1,37 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Exchange_Art.Models
 {
     public class ArtLease
     {
+
         public int Id {get; set;}
 
         [ForeignKey("Art"), Column("ArtPiece")]
-        public string ArtId { get; set; }
-        public Art ArtPiece { get; set; }
+        public int ArtId { get; set; }
+
+        public byte[] ArtPieceImageData { get; set; }
+
+        public string ArtDescription { get; set; }
 
         [ForeignKey("ApplicationUser"), Column("ArtLeaser")]
         public string LeaserId { get; set; }
-        public ApplicationUser LeaseUser { get; set; }
 
-        public int LeasePeriod { get; set; }
+        public string LeaserName { get; set; }
 
-        public int LeaseDaysleft { get; set; }
+        public int LeasePeriodInMonths { get; set; }
+
+        public string DateLeaseStarted { get; set; }
+
+        public string DateLeaseEnds { get; set; }
 
         [Column("LeaseAmount")]
         public double CryptoAmount { get; set; }
 
         [ForeignKey("ApplicationUser"), Column("ArtOwner")]
         public string OwnerId { get; set; }
-        public ApplicationUser OwnerUser { get; set; }
+
+        public string OwnerName { get; set; }
 
     }
 }

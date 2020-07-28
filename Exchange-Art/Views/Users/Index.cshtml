@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
 @using Exchange_Art.Models
 @model IEnumerable<ApplicationUser>
 @inject UserManager<ApplicationUser> UserManager
@@ -7,23 +8,50 @@
 
 <div class="table-responsive">
     <table class="table table-sm table-hover">
-        <tr><th>Name</th><th>Email</th><th>Role</th><th>User Id</th><th>Update</th><th>Delete</th></tr>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>User Id</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
         @foreach (ApplicationUser user in Model)
         {
             var AppUser = await UserManager.FindByIdAsync(user.Id);
             var roles = await UserManager.GetRolesAsync(AppUser);
-    <tr>
-        <td>@user.UserName</td>
-        <td>@user.Email</td>
-        <td>@roles[0]</td>
-        <td>@user.Id</td>
-        <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a></td>
-        <td>
-            <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-        </td>
-    </tr>
+        <tr>
+            <td>@user.UserName</td>
+            <td>@user.Email</td>
+            @if (roles.Count == 0) // Role is set manually by Admin user
+            {
+                <td class="alert-danger">N.A.</td>
+            }
+            else
+            {
+                <td>@roles[0]</td>
+            }
+            <td>@user.Id</td>
+            <td>
+                <a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a>
+            </td>
+            <td>
+                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+            </td>
+        </tr>
         }
     </table>
 </div>
 
-<a asp-action="Create" class="btn btn-primary">Create a User</a>
+@{
+    // Get UserName of logged in User
+    var userName = this.User.FindFirstValue(ClaimTypes.Name);
+    if (userName == "Admin")
+    {
+        <a asp-action="Create" class="btn btn-primary">Create A User</a>
+    }
+    else
+    {
+        // Don't show "Create A User" button
+    }
+}

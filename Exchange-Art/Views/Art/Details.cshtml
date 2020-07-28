@@ -1,33 +1,33 @@
 ﻿@model Exchange_Art.Models.Art
 
 <h2 class="bg-dark text-light rounded">Details</h2>
-<br />
 
+<div class="media">
+    @{
+        var base64 = Convert.ToBase64String(Model.ImageData);
+        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+    }
+    <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle">
+</div>
+<br />
 <div class="table-responsive">
     <table class="table">
         <thead>
             <tr>
-                <th>Art image</th>
                 <th>Art Title</th>
+                <th>Art Description</th>
                 <th>Owner</th>
-                <th>Lease price</th>
+                <th>Lease Price</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td>@Model.ImageTitle</td>
                 <td>
-                    @{
-                        var base64 = Convert.ToBase64String(Model.ImageData);
-                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
-                    }
-                    <div class="media">
-                        <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
-                        <div class="media-body">
-                            <p class="mt-0">@Model.ImageDescription</p>
-                        </div>
+                    <div class="media-body">
+                        <p class="mt-0">@Model.ImageDescription</p>
                     </div>
                 </td>
-                <td>@Model.ImageTitle</td>
                 <td>@Model.OwnerName</td>
                 <td>@Model.LeasePrice</td>
             </tr>

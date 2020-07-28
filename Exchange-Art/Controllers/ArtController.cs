@@ -22,13 +22,19 @@ namespace Exchange_Art.Controllers
             _userManager = userManager;
         }
 
-        // GET: Art Index page
+        // GET: Art/Index page
         public async Task<IActionResult> Index()
         {
             return View(await _context.Art.ToListAsync());
         }
 
-        // GET: Art Upload page
+        // GET: Art/Leases page
+        public async Task<IActionResult> Leases()
+        {
+            return View(await _context.ArtLease.ToListAsync());
+        }
+
+        // GET: Art/Upload page
         public IActionResult Upload()
         {
             return View();
@@ -57,6 +63,53 @@ namespace Exchange_Art.Controllers
         // GET: Art/Lease/5
         [Authorize]
         public async Task<IActionResult> Lease(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var art = await _context.Art.FirstOrDefaultAsync(m => m.Id == id);
+            var artLease = await _context.ArtLease.FirstOrDefaultAsync(m => m.ArtId == art.Id);
+            
+            if (art == null)
+            {
+                return NotFound();
+            }
+
+            if(artLease == null)
+            {
+                ViewBag.UserName = "N.A.";
+            }
+            else
+            {
+                ViewBag.UserName = artLease.LeaserName;
+            }
+
+            return View(art);
+        }
+
+        // GET: Art/DeleteLease/5
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        public async Task<IActionResult> DeleteLease(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var artLease = await _context.ArtLease.FirstOrDefaultAsync(m => m.Id == id);
+            if (artLease == null)
+            {
+                return NotFound();
+            }
+
+            return View(artLease);
+        }
+
+        // GET: Art/Delete/5
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -156,20 +209,72 @@ namespace Exchange_Art.Controllers
             return View(art);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SetLeasePrice(int id1, double number1)
+        // GET: RequestLease
+        // Art/Lease/5
+        [Authorize]
+        public async Task<IActionResult> RequestLease(int? id)
         {
-            Art ArtPiece = await _context.Art.FindAsync(id1);
-            ArtPiece.LeasePrice = number1;
-            await _context.SaveChangesAsync();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-            ViewBag.ImageTitle = ArtPiece.ImageTitle;
-            ViewBag.LeasePrice = number1;
-            ViewBag.Message = "Lease price stored in database!";
+            var art = await _context.Art
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (art == null)
+            {
+                return NotFound();
+            }
 
-            return View("Details");
+            return View(art);
         }
 
+        // POST: RequestLease
+        [HttpPost]
+        public async Task<IActionResult> RequestLease(int ArtPieceId,int ArtPeriod, string LeaserId, string LeaserName, double LeaseAmount)
+        {
+            var ArtPiece = await _context.Art.FirstOrDefaultAsync(m => m.Id == ArtPieceId);
+            if (ArtPiece == null)
+            {
+                return NotFound();
+            }
+
+            // Create ArtLease instance
+            ArtLease LeasedArt = new ArtLease();
+
+            // Fill in all required columns of ArtLease model (table)
+            LeasedArt.ArtId                 = ArtPieceId;
+            LeasedArt.ArtPieceImageData     = ArtPiece.ImageData;
+            LeasedArt.ArtDescription        = ArtPiece.ImageDescription;
+            LeasedArt.LeaserId              = LeaserId;
+            LeasedArt.LeaserName            = LeaserName;
+            LeasedArt.LeasePeriodInMonths   = ArtPeriod;
+            LeasedArt.DateLeaseStarted      = DateTime.Today.ToString("d");
+            LeasedArt.DateLeaseEnds         = DateTime.Today.AddMonths(ArtPeriod).ToString("d");
+            LeasedArt.CryptoAmount          = LeaseAmount * ArtPeriod;
+            LeasedArt.OwnerId               = ArtPiece.UserId;
+            LeasedArt.OwnerName             = ArtPiece.OwnerName;
+
+            // Store ArtLease record in database
+            _context.ArtLease.Add(LeasedArt);
+
+            // Set boolean Leased to TRUE in ArtPiece requested for Lease (Art model (table))
+            ArtPiece.Leased = true;
+
+            // Save changes to database
+            await _context.SaveChangesAsync();
+
+            // Send ViewBag with ArtImage data back to View
+            string imageBase64Data = Convert.ToBase64String(ArtPiece.ImageData);
+            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+            ViewBag.ImageTitle = ArtPiece.ImageTitle;
+            ViewBag.ImageDataUrl = imageDataURL;
+            ViewBag.Message = "Lease Request Submitted!";
+
+            return View(ArtPiece);
+        }
+
+        // POST: UploadArt
         [HttpPost]
         public async Task<IActionResult> UploadArt(string title1, string description1, string owner1, string username1)
         {
@@ -188,7 +293,10 @@ namespace Exchange_Art.Controllers
                 ms.Close();
                 ms.Dispose();
 
+                // Store ArtImg in Art table
                 _context.Art.Add(ArtImg);
+                
+                // Save changes to database
                 await _context.SaveChangesAsync();
             }
 
@@ -204,6 +312,7 @@ namespace Exchange_Art.Controllers
             return View("Upload");
         }
 
+        // POST: RetrieveArt
         [HttpPost]
         public ActionResult RetrieveArt()
         {
@@ -218,25 +327,6 @@ namespace Exchange_Art.Controllers
             return View("Upload");
         }
 
-        // GET: Art/Delete/5
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var art = await _context.Art
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (art == null)
-            {
-                return NotFound();
-            }
-
-            return View(art);
-        }
-
         // POST: Art/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -246,6 +336,24 @@ namespace Exchange_Art.Controllers
             _context.Art.Remove(art);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Art/DeleteLease/5
+        [HttpPost, ActionName("DeleteLease")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLeaseConfirmed(int id)
+        {
+            // Remove ArtLease record
+            var artLease = await _context.ArtLease.FindAsync(id);
+            _context.ArtLease.Remove(artLease);
+
+            // Set boolean Leased to FALSE in ArtPiece record
+            var art = await _context.Art.FindAsync(artLease.ArtId);
+            art.Leased = false;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+
         }
 
         private bool ArtExists(int id)

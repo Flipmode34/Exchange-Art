@@ -4,14 +4,16 @@ using Exchange_Art.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Exchange_Art.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200727142451_ArtLeaseModelUpdate4")]
+    partial class ArtLeaseModelUpdate4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,27 +130,18 @@ namespace Exchange_Art.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ArtDescription")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ArtId")
                         .HasColumnName("ArtPiece")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("ArtPieceImageData")
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<double>("CryptoAmount")
                         .HasColumnName("LeaseAmount")
                         .HasColumnType("float");
 
-                    b.Property<string>("DateLeaseEnds")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("LeaseDaysleft")
+                        .HasColumnType("int");
 
-                    b.Property<string>("DateLeaseStarted")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("LeasePeriodInMonths")
+                    b.Property<int>("LeasePeriod")
                         .HasColumnType("int");
 
                     b.Property<string>("LeaserId")
@@ -160,9 +153,6 @@ namespace Exchange_Art.Migrations
 
                     b.Property<string>("OwnerId")
                         .HasColumnName("ArtOwner")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerName")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

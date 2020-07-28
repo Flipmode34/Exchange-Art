@@ -66,23 +66,22 @@ namespace Exchange_Art.Controllers
         {
             ArtOwners artowner = new ArtOwners();
             
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(id);
 
-            artowner.ArtOwner = user;
+            artowner.ArtOwner = LoggedInUser;
 
             // Query for ArtOwners in 'Art' table
             var owners = from o in _context.Art
-                         where o.OwnerName.Equals(user.UserName)
+                         where o.OwnerName.Equals(LoggedInUser.UserName)
                          select o;
-
             artowner.ArtPieces = owners;
 
             System.Security.Claims.ClaimsPrincipal currentUser = this.User;
             var UserId = _userManager.GetUserId(User);
 
-            // Check if ArtOwner object is not NULL and whether the user that is trying to access the update profile page
-            // is the correct user.
-            if (artowner != null && user.Id == UserId)
+            // Check if ArtOwner object is not NULL and whether the user 
+            // that is trying to access the update profile page, is the correct user.
+            if (artowner != null && LoggedInUser.Id == UserId)
                 return View(artowner);
             else
 

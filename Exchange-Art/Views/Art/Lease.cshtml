@@ -1,6 +1,7 @@
 ﻿@model Exchange_Art.Models.Art
 
-<h1 class="bg-dark text-light rounded">Lease Art piece</h1>
+<h2 class="bg-dark text-light rounded">Lease Art Piece</h2>
+<br />
 
 <!--Single Art Image Table-->
 <div class="table-responsive">
@@ -18,6 +19,9 @@
                 </th>
                 <th>
                     Availability
+                </th>
+                <th>
+                    Current Leaser
                 </th>
                 <th>
                     Action
@@ -45,17 +49,27 @@
                     if (Model.Leased == false)
                     {
                         string Leased = "Available";
-                        <td>@Leased</td>
+                        <td class="alert-success">@Leased</td>
                     }
                     else
                     {
                         string Leased = "Not available";
-                        <td>@Leased</td>
+                        <td class="alert-danger">@Leased</td>
                     }
                 }
-            <td>
-                <a class="btn btn-primary" asp-action="Lease" asp-route-id="@Model.Id">Request Lease</a>
-            </td>
+                <td>
+                    @ViewBag.UserName
+                </td>
+                @{
+                    if (Model.Leased == false)
+                    {
+                        <td><a class="btn btn-primary" asp-action="RequestLease" asp-route-id="@Model.Id">Request Lease</a></td>
+                    }
+                    else
+                    {
+                        <td><a class="btn btn-primary" asp-action="RequestLease" asp-route-id="@Model.Id" hidden>Request Lease</a></td>
+                    }
+                }
             </tr>
         </tbody>
     </table>

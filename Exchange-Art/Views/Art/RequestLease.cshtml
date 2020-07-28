@@ -1,0 +1,129 @@
+﻿@using System.Security.Claims;
+
+@model Exchange_Art.Models.Art
+
+<h2 class="bg-dark text-white rounded text-center">Request Lease</h2>
+
+<br />
+
+<!--Single Art Image Table-->
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Art Image
+                </th>
+                <th>
+                    Owner
+                </th>
+                <th>
+                    Lease Price
+                </th>
+                <th>
+                    Availability
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @{
+                        var base64 = Convert.ToBase64String(Model.ImageData);
+                        var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+                    }
+                    <div class="media">
+                        <img class="align-self-start mr-3 img-fluid rounded" src="@imgSrc" alt="item.ImageTitle" width="160" height="120">
+                    </div>
+                </td>
+                <td>
+                    @Model.OwnerName
+                </td>
+                <td>
+                    @Model.LeasePrice
+                </td>
+                @{
+                    if (Model.Leased == false)
+                    {
+                        string Leased = "Available";
+                        <td>@Leased</td>
+                    }
+                    else
+                    {
+                        string Leased = "Not available";
+                        <td>@Leased</td>
+                    }
+                }
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<hr />
+
+<div class="form-group">
+    <form asp-action="RequestLease" asp-controller="Art" method="post">
+        <div class="form-group">
+            <!--Set ArtPieceId, a hidden HTML element-->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">ArtPieceId</span>
+                </div>
+                <input type="number" class="form-control" id="ArtPieceId" name="ArtPieceId" value="@Model.Id" readonly>
+            </div>
+            <br />
+            <!--Select period to Lease-->
+            <div class="custom-select-sm">
+                <select class="custom-select" id="ArtPeriod" name="ArtPeriod" required>
+                    <option selected>Select the amount of months</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <br />
+            <!--Set Lease Requester, a hidden HTML element-->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Lease Requester</span>
+                </div>
+                @{
+                    // Get UserId & UserName of logged in User = Leaser of ArtPiece
+                    var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var userName = this.User.FindFirstValue(ClaimTypes.Name);
+                    <input type="text" class="form-control" id="LeaserId" name="LeaserId" value="@userId" readonly>
+                    <input type="text" class="form-control" id="LeaserName" name="LeaserName" value="@userName" readonly>
+                }
+            </div>
+            <br />
+            <!--Set LeaseAmount, a hidden HTML element-->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Lease Amount</span>
+                </div>
+                <input type="number" class="form-control" id="LeaseAmount" name="LeaseAmount" value="@Model.LeasePrice" readonly>
+            </div>
+            <br />
+            <button class="btn btn-primary" type="submit">Submit Lease request</button>
+        </div>
+    </form>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<br />
+<div class="alert alert-success" role="alert">
+    <h1 class="alert-heading rounded">@ViewBag.Message</h1>
+    <hr />
+    <h3>@ViewBag.ImageTitle</h3>
+    <img src="@ViewBag.ImageDataUrl" class="img-fluid rounded" />
+</div>
+
