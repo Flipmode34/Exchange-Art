@@ -6,7 +6,7 @@
 
 <br />
 
-<!--Single Art Image Table-->
+<!--Single ArtImage Table-->
 <div class="table-responsive">
     <table class="table">
         <thead>
@@ -18,7 +18,7 @@
                     Owner
                 </th>
                 <th>
-                    Lease Price
+                    Lease Price Per Month
                 </th>
                 <th>
                     Availability
@@ -40,7 +40,7 @@
                     @Model.OwnerName
                 </td>
                 <td>
-                    @Model.LeasePrice
+                    @Model.LeasePrice Ether
                 </td>
                 @{
                     if (Model.Leased == false)
@@ -65,7 +65,7 @@
     <form asp-action="RequestLease" asp-controller="Art" method="post">
         <div class="form-group">
             <!--Set ArtPieceId, a hidden HTML element-->
-            <div class="input-group">
+            <div class="input-group" hidden>
                 <div class="input-group-prepend">
                     <span class="input-group-text">ArtPieceId</span>
                 </div>
@@ -73,8 +73,8 @@
             </div>
             <br />
             <!--Select period to Lease-->
-            <div class="custom-select-sm">
-                <select class="custom-select" id="ArtPeriod" name="ArtPeriod" required>
+            <div>
+                <select class="custom-select-sm" id="ArtPeriod" name="ArtPeriod" required>
                     <option selected>Select the amount of months</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
@@ -88,9 +88,8 @@
                     <option value="12">12</option>
                 </select>
             </div>
-            <br />
             <!--Set Lease Requester, a hidden HTML element-->
-            <div class="input-group">
+            <div class="input-group" hidden>
                 <div class="input-group-prepend">
                     <span class="input-group-text">Lease Requester</span>
                 </div>
@@ -102,13 +101,12 @@
                     <input type="text" class="form-control" id="LeaserName" name="LeaserName" value="@userName" readonly>
                 }
             </div>
-            <br />
             <!--Set LeaseAmount, a hidden HTML element-->
-            <div class="input-group">
+            <div class="input-group" hidden>
                 <div class="input-group-prepend">
                     <span class="input-group-text">Lease Amount</span>
                 </div>
-                <input type="number" class="form-control" id="LeaseAmount" name="LeaseAmount" value="@Model.LeasePrice" readonly>
+                <input type="text" class="form-control" id="LeaseAmount" name="LeaseAmount" value="@Model.LeasePrice" readonly>
             </div>
             <br />
             <button class="btn btn-primary" type="submit">Submit Lease request</button>
@@ -120,10 +118,7 @@
     <a asp-action="Index">Back to List</a>
 </div>
 <br />
-<div class="alert alert-success" role="alert">
+<div class="alert-danger" role="alert">
     <h1 class="alert-heading rounded">@ViewBag.Message</h1>
-    <hr />
-    <h3>@ViewBag.ImageTitle</h3>
-    <img src="@ViewBag.ImageDataUrl" class="img-fluid rounded" />
 </div>
 

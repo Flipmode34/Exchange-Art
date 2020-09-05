@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Exchange_Art.Data;
 using Exchange_Art.Models;
+using Nethereum.Web3;
+using Nethereum.Web3.Accounts;
+using System.Globalization;
 
 namespace Exchange_Art.Controllers
 {
@@ -15,11 +18,13 @@ namespace Exchange_Art.Controllers
     {
         private readonly ApplicationDbContext _context;
         private UserManager<ApplicationUser> _userManager;
+        private WalletController _walletController;
 
         public ArtController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
+            _walletController = new WalletController();
         }
 
         // GET: Art/Index page
@@ -35,6 +40,7 @@ namespace Exchange_Art.Controllers
         }
 
         // GET: Art/Upload page
+        [Authorize]
         public IActionResult Upload()
         {
             return View();
@@ -126,28 +132,6 @@ namespace Exchange_Art.Controllers
             return View(art);
         }
 
-        // GET: Art/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Art/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ImageTitle,ImageData")] Art art)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(art);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(art);
-        }
-
         // GET: Art/Edit/5
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
@@ -179,19 +163,24 @@ namespace Exchange_Art.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageTitle,ImageDescription,ImageData,UserId,OwnerName,LeasePrice")] Art art)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ImageTitle,ImageDescription,ImageData,UserId,OwnerName")] Art art, string LeasePrice)
         {
             if (id != art.Id)
             {
                 return NotFound();
             }
 
+            // Convert string LeasePrice back to decimal
+            NumberStyles style = NumberStyles.AllowDecimalPoint;
+            decimal dLeasePrice = decimal.Parse(LeasePrice, style); // Parse string to decimal
+            art.LeasePrice = dLeasePrice; // Store decimal value in Art Model (table)
+            
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(art);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(); // Save changes in Database
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -231,13 +220,23 @@ namespace Exchange_Art.Controllers
 
         // POST: RequestLease
         [HttpPost]
-        public async Task<IActionResult> RequestLease(int ArtPieceId,int ArtPeriod, string LeaserId, string LeaserName, double LeaseAmount)
+        public async Task<IActionResult> RequestLease(  int ArtPieceId, 
+                                                        int ArtPeriod, 
+                                                        string LeaserId, 
+                                                        string LeaserName, 
+                                                        string LeaseAmount)
         {
+            // Reference ArtPiece that is to be leased
             var ArtPiece = await _context.Art.FirstOrDefaultAsync(m => m.Id == ArtPieceId);
+
             if (ArtPiece == null)
             {
                 return NotFound();
             }
+
+            // Convert string LeaseAmount back to decimal
+            NumberStyles style = NumberStyles.AllowDecimalPoint;
+            decimal dLeaseAmount = decimal.Parse(LeaseAmount, style); // Parse string to decimal
 
             // Create ArtLease instance
             ArtLease LeasedArt = new ArtLease();
@@ -251,7 +250,7 @@ namespace Exchange_Art.Controllers
             LeasedArt.LeasePeriodInMonths   = ArtPeriod;
             LeasedArt.DateLeaseStarted      = DateTime.Today.ToString("d");
             LeasedArt.DateLeaseEnds         = DateTime.Today.AddMonths(ArtPeriod).ToString("d");
-            LeasedArt.CryptoAmount          = LeaseAmount * ArtPeriod;
+            LeasedArt.CryptoAmount          = dLeaseAmount * ArtPeriod;
             LeasedArt.OwnerId               = ArtPiece.UserId;
             LeasedArt.OwnerName             = ArtPiece.OwnerName;
 
@@ -260,21 +259,39 @@ namespace Exchange_Art.Controllers
 
             // Set boolean Leased to TRUE in ArtPiece requested for Lease (Art model (table))
             ArtPiece.Leased = true;
+            
+            // Reference LeaseRequester and Owner of the ArtPiece
+            ApplicationUser LeaseRequester = await _userManager.FindByIdAsync(LeaserId);
+            ApplicationUser ArtOwner = await _userManager.FindByIdAsync(ArtPiece.UserId);
 
-            // Save changes to database
-            await _context.SaveChangesAsync();
+            // Reference Ethereum account for balance checking
+            var LeaseRequesterAccount = new Account(LeaseRequester.WalletPrivateKey);
+            var web3 = new Web3(LeaseRequesterAccount, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0");
+            var etherBalance = await _walletController.GetAccountBalance(LeaseRequesterAccount); // Check Ethererum balance
 
-            // Send ViewBag with ArtImage data back to View
-            string imageBase64Data = Convert.ToBase64String(ArtPiece.ImageData);
-            string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
-            ViewBag.ImageTitle = ArtPiece.ImageTitle;
-            ViewBag.ImageDataUrl = imageDataURL;
-            ViewBag.Message = "Lease Request Submitted!";
+            if (etherBalance < LeasedArt.CryptoAmount)
+            {
+                ViewBag.Message = $"Lease Request of Artpiece {ArtPiece.ImageTitle} denied, the Ethereum balance is to low: {etherBalance}";
+            }
+            else
+            {
+                // Exchange Ether LeaseAmount between the two Ethereum addresses
+                Nethereum.RPC.Eth.DTOs.TransactionReceipt transaction = await _walletController.TransferEther(
+                                        LeaseRequester.WalletPrivateKey,
+                                        ArtOwner.EtheruemAddress,
+                                        LeasedArt.CryptoAmount);
+
+                // Save changes to database
+                await _context.SaveChangesAsync();
+
+                // Send ViewBag message with LeaseRequest data back to View
+                ViewBag.Message = $"Lease Request of Artpiece {ArtPiece.ImageTitle} submitted for {LeasedArt.CryptoAmount} Ethereum.";
+            }
 
             return View(ArtPiece);
         }
 
-        // POST: UploadArt
+        // POST: Art/Upload
         [HttpPost]
         public async Task<IActionResult> UploadArt(string title1, string description1, string owner1, string username1)
         {
@@ -307,7 +324,7 @@ namespace Exchange_Art.Controllers
 
             ViewBag.ImageTitle = ArtImage.ImageTitle;
             ViewBag.ImageDataUrl = imageDataURL;
-            ViewBag.Message = "Art piece stored in database!";
+            ViewBag.Message = $"Artpiece {ArtImage.ImageTitle} stored in database!";
             
             return View("Upload");
         }
@@ -352,7 +369,8 @@ namespace Exchange_Art.Controllers
             art.Leased = false;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(Leases));
 
         }
 

@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Exchange_Art.Models;
-using Exchange_Art.Data;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
+using Exchange_Art.Models;
+using Exchange_Art.Data;
+using Nethereum.Hex.HexConvertors.Extensions;
+using Nethereum.Web3.Accounts;
 
 namespace Exchange_Art.Controllers
 {
@@ -37,6 +39,11 @@ namespace Exchange_Art.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(User user)
         {
+
+            var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
+            var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
+            var account = new Account(privateKey); // Creation of Eth account + public key
+
             if (ModelState.IsValid)
             {
                 // Here the data from the User class is used,
@@ -45,7 +52,9 @@ namespace Exchange_Art.Controllers
                 ApplicationUser appUser = new ApplicationUser
                 {
                     UserName = user.Name,
-                    Email = user.Email
+                    Email = user.Email,
+                    WalletPrivateKey = privateKey,
+                    EtheruemAddress = account.Address
                 };
 
                 IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
@@ -59,6 +68,7 @@ namespace Exchange_Art.Controllers
             }
             return View(user);
         }
+
         // GET:
         // Update a user page
         [Authorize]

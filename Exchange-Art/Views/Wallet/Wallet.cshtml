@@ -1,0 +1,87 @@
+﻿
+@using Exchange_Art.Models
+@using Nethereum.Web3
+
+@model ApplicationUser
+
+<h2 class="bg-dark text-white rounded text-center">Ethereum Wallet Of @Model.UserName</h2>
+<br />
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    User
+                </th>
+                <th>
+                    Public Ethereum Wallet Address
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @Model.UserName
+                </td>
+                @{ if (Model.EtheruemAddress == null)
+                    {
+                        <td class="alert-danger">
+                            NOT AVAILABLE
+                        </td>
+
+                    }
+                    else
+                    {
+                        <td class="alert-success">
+                            @{
+                                string publicEthAddress = Model.EtheruemAddress;
+                            }
+                            @publicEthAddress
+                        </td>
+                    }
+                }
+            </tr>
+        </tbody>
+    </table>
+
+    @{ if (ViewBag.EthBalance == null)
+        {
+            // Don't show anyhing
+        }
+        else
+        {
+            <p class="alert-info rounded">@ViewBag.EthBalance</p>
+        }
+    }
+
+    @{ if (ViewBag.TransactionCount == null)
+        {
+            // Don't show anyhing
+        }
+        else
+        {
+            <p class="alert-info rounded">@ViewBag.TransactionCount</p>
+        }
+    }
+
+    @{ if (ViewBag.WalletCreated == null)
+        {
+            // Don't show anyhing
+        }
+        else
+        {
+            <p class="alert-danger rounded">@ViewBag.WalletCreated</p>
+        }
+    }
+
+    <hr />
+
+    <div class="btn-toolbar">
+        <a class="btn btn-primary" asp-controller="Wallet" asp-action="CheckBalance" asp-route-id="@Model.Id">Check Balance</a>
+        <a class="btn btn-primary ml-3" asp-controller="Wallet" asp-action="CheckTransactions" asp-route-id="@Model.Id">Check Transactions</a>
+        <a class="btn btn-primary ml-3" asp-controller="Wallet" asp-action="CreateWallet" asp-route-id="@Model.Id">Create Wallet</a>
+
+    </div>
+
+</div>

@@ -11,8 +11,8 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Public Eth Address</th>
             <th>Role</th>
-            <th>User Id</th>
             <th>Update</th>
             <th>Delete</th>
         </tr>
@@ -23,6 +23,9 @@
         <tr>
             <td>@user.UserName</td>
             <td>@user.Email</td>
+            <td>
+                @user.EtheruemAddress
+            </td>
             @if (roles.Count == 0) // Role is set manually by Admin user
             {
                 <td class="alert-danger">N.A.</td>
@@ -31,7 +34,6 @@
             {
                 <td>@roles[0]</td>
             }
-            <td>@user.Id</td>
             <td>
                 <a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a>
             </td>

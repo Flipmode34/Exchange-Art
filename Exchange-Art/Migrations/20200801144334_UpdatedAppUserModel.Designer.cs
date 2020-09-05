@@ -4,14 +4,16 @@ using Exchange_Art.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Exchange_Art.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200801144334_UpdatedAppUserModel")]
+    partial class UpdatedAppUserModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,8 +109,8 @@ namespace Exchange_Art.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("LeasePrice")
-                        .HasColumnType("decimal(18,3)");
+                    b.Property<double>("LeasePrice")
+                        .HasColumnType("float");
 
                     b.Property<bool>("Leased")
                         .HasColumnType("bit");
@@ -144,9 +146,9 @@ namespace Exchange_Art.Migrations
                     b.Property<byte[]>("ArtPieceImageData")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<decimal>("CryptoAmount")
+                    b.Property<double>("CryptoAmount")
                         .HasColumnName("LeaseAmount")
-                        .HasColumnType("decimal(18,3)");
+                        .HasColumnType("float");
 
                     b.Property<string>("DateLeaseEnds")
                         .HasColumnType("nvarchar(max)");

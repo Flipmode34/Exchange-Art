@@ -17,7 +17,8 @@ namespace Exchange_Art.Models
 
         public string OwnerName { get; set; }
 
-        public double LeasePrice { get; set; }
+        [Column(TypeName = "decimal(18,3)")]
+        public decimal LeasePrice { get; set; } // change to INT (02092020)
 
         public bool Leased { get; set; }
 

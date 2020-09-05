@@ -9,9 +9,14 @@
     {
     <li class="nav-item">
         @{
-            // Get User Id of logged in user, for use in HTML anchor element below
             var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Update" asp-route-id="@userId" title="Update">Hello @User.Identity.Name!</a>
+            <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle bg-dark text-light" data-toggle="dropdown" title="Update">Hello @User.Identity.Name!</a>
+                <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuLink">
+                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Users" asp-action="Update" asp-route-id="@userId">Profile</a>
+                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Wallet" asp-action="Wallet" asp-route-id="@userId">Wallet</a>
+                </div>
+            </div>
         }
     </li>
         @if (User?.Identity?.IsAuthenticated ?? false)

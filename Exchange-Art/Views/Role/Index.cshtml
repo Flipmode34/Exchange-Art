@@ -13,7 +13,6 @@
         <tr>
             <th>Role Name</th>
             <th>User(s) Part Of Role</th>
-            <th>Role Id</th>
             <th>Update</th>
             <th>Delete</th>
         </tr>
@@ -22,7 +21,6 @@
             <tr>
                 <td>@role.Name</td>
                 <td i-role="@role.Id"></td>
-                <td>@role.Id</td>
                 <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@role.Id">Update</a></td>
                 <td>
                     <form asp-controller="Role" asp-action="Delete" asp-route-id="@role.Id" method="post">
