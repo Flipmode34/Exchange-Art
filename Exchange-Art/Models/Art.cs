@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Exchange_Art.Models
 {
+    // Database table dbo.Art
+
     public class Art
     {
         public int Id { get; set; }
