@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Exchange_Art.Models.Block>
+
+@{ 
+    ViewBag.Title = "Blocks Overview";
+}
+
+<h1 class="bg-dark text-white rounded text-center">Blocks Overview</h1>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Block Id
+                </th>
+                <th>
+                    PreviousHash
+                </th>
+                <th>
+                    Hash
+                </th>
+                <th>
+                    Nonce
+                </th>
+                <th>
+                    TimeStamp
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var block in Model)
+            {
+            <tr>
+                <td>
+                    @block.Id
+                </td>
+                <td>
+                    @block.PreviousHash
+                </td>
+                <td>
+                    @block.Hash
+                </td>
+                <td>
+                    @block.Nonce
+                </td>
+                <td>
+                    @block.TimeStamp
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-primary" asp-action="CreateGenesisBlock">Create Genesis Block</a>
+</div>

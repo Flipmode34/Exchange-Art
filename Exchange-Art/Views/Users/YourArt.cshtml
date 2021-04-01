@@ -1,28 +1,10 @@
 ﻿@using Exchange_Art.Models
 @model ArtOwners
 
-<h1 class="bg-dark text-white rounded text-center">Update User @Model.ArtOwner.UserName</h1>
-<div asp-validation-summary="All" class="text-danger"></div>
+@{
+    ViewBag.Title = "Your Art";
+}
 
-<form asp-action="Update" method="post">
-    <div class="form-group">
-        <label asp-for="@Model.ArtOwner.Id"></label>
-        <input asp-for="@Model.ArtOwner.Id" class="form-control" disabled />
-    </div>
-    <div class="form-group">
-        <label asp-for="@Model.ArtOwner.Email"></label>
-        <input asp-for="@Model.ArtOwner.Email" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" name="password" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
-</form>
-
-<br />
-<br />
 <h2 class="bg-dark text-white rounded text-center">Art Owned By You</h2>
 <br />
 
@@ -79,8 +61,8 @@
                         }
                     }
                     <td>
-                        <a class="btn btn-link" asp-controller="Art" asp-action="Details" asp-route-id="@art.Id">Details</a> |
-                        <a class="btn btn-link" asp-controller="Art" asp-action="Delete" asp-route-id="@art.Id">Delete</a>
+                        <a class="btn btn-info" asp-controller="Art" asp-action="Details" asp-route-id="@art.Id">Details</a>
+                        <a class="btn btn-danger" asp-controller="Art" asp-action="Delete" asp-route-id="@art.Id">Delete</a>
                     </td>
                 </tr>
             }

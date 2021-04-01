@@ -2,6 +2,10 @@
 
 @model IEnumerable<Exchange_Art.Models.Art>
 
+@{
+    ViewBag.Title = "Upload Art";
+}
+
 <h1 class="bg-dark text-white rounded text-center">Upload Art</h1>
 
 <form asp-action="UploadArt" asp-controller="Art" method="post" enctype="multipart/form-data">

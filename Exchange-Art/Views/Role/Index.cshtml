@@ -23,11 +23,7 @@
                 <td i-role="@role.Id"></td>
                 <td><a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@role.Id">Update</a></td>
                 <td>
-                    <form asp-controller="Role" asp-action="Delete" asp-route-id="@role.Id" method="post">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Delete
-                        </button>
-                    </form>
+                    <a class="btn btn-sm btn-danger" asp-controller="Role" asp-action="Delete" asp-route-id="@role.Id">Delete</a>
                 </td>
             </tr>
         }

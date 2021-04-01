@@ -1,128 +1,128 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Exchange_Art.Models;
+using Exchange_Art.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
+using System.Linq;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using System.Globalization;
 
 namespace Exchange_Art.Controllers
 {
     public class WalletController : Controller
     {
+        private readonly ApplicationDbContext _context;
+        private readonly INotyfService _notyf;
         private UserManager<ApplicationUser> _userManager;
+        private readonly IFlipChain _flipChain;
 
         [ActivatorUtilitiesConstructor] // Marks this contructor as the primary one for DI.
-        public WalletController(UserManager<ApplicationUser> userManager)
+        public WalletController(ApplicationDbContext context, INotyfService notyf, UserManager<ApplicationUser> userManager, IFlipChain flipChain)
         {
+            _context = context;
+            _notyf = notyf;
             _userManager = userManager;
+            _flipChain = flipChain;
         }
 
-        public WalletController()
+        public async Task<IActionResult> CheckBalance()
         {
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
+            // Reference logged in User
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
 
-        }
+            var walletAddress = ( 
+                from w in _context.Wallets
+                where w.Username == LoggedInUser.UserName
+                select w.publicAddress).FirstOrDefault();
 
-        // Has parameter Web3.Accounts.Account
-        public async Task<decimal> GetAccountBalance(Account LeaseRequesterAccount)
-        {
-            // Reference account and Ropsten Infura Ethereum test environment
-            var web3 = new Web3(LeaseRequesterAccount, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0");
+            if (walletAddress != null)
+            {
+                var walletBalance = (
+                from w in _context.Wallets
+                where w.Username == LoggedInUser.UserName
+                select w.Balance).FirstOrDefault();
 
-            // Get Wei balance of a public address
-            var WeiBalance = await web3.Eth.GetBalance.SendRequestAsync(LeaseRequesterAccount.Address);
-            
-            // Get Eth balance of a public address
-            var EtherAmount = Web3.Convert.FromWei(WeiBalance.Value);
+                _notyf.Information($"Your wallet balance is: {walletBalance}");
+            }
+            else
+            {
+                _notyf.Warning("No wallet balance recorded!", 10);
+            }
 
-            return EtherAmount;
-        }
+            var wallet = (from w in _context.Wallets
+                          where w.Username == LoggedInUser.UserName
+                          select w).FirstOrDefault();
 
-        // Has parameter string, for "Check Balance" button in wallet page of user
-        public async Task<IActionResult> CheckBalance(string Id)
-        {
-            // Reference LeaseRequester and Owner of the ArtPiece
-            ApplicationUser LoggedInuser = await _userManager.FindByIdAsync(Id);
-
-            // Reference Ethereum account for balance checking
-            var LeaseRequesterAccount = new Account(LoggedInuser.WalletPrivateKey);
-            var web3 = new Web3(LeaseRequesterAccount, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0");
-
-            // Get Wei balance of a public address
-            var WeiBalance = await web3.Eth.GetBalance.SendRequestAsync(LeaseRequesterAccount.Address);
-
-            // Get Eth balance of a public address
-            var EtherBalance = Web3.Convert.FromWei(WeiBalance.Value);
-
-            ViewBag.EthBalance = $"Your Ethereum account balance is: {EtherBalance} Ether.";
-
-            return View("Wallet", LoggedInuser);
-        }
-
-        public async Task<IActionResult> CheckTransactions(string Id)
-        {
-            // Reference LeaseRequester and Owner of the ArtPiece
-            ApplicationUser LoggedInuser = await _userManager.FindByIdAsync(Id);
-
-            // Reference Ethereum account for transactions checking
-            var TransactionsCheckAccount = new Account(LoggedInuser.WalletPrivateKey);
-            var web3 = new Web3(TransactionsCheckAccount, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0");
-
-            // Get transactions count from Ethereum test network
-            var TransactionCount = await web3.Eth.Transactions.GetTransactionCount.SendRequestAsync(TransactionsCheckAccount.Address);
-
-            ViewBag.TransactionCount = $"Your Ethereum Transaction count is: {TransactionCount}";
-
-            return View("Wallet", LoggedInuser);
+            ViewBag.walletAddress = walletAddress;
+            return View("Wallet", wallet);
         }
         
-        public async Task<IActionResult> CreateWallet(string Id)
+        public async Task<IActionResult> CreateWallet()
         {
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
             // Reference logged in User
-            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(Id);
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
+
+            var walletAddress = (
+                from w in _context.Wallets
+                where w.Username == LoggedInUser.UserName
+                select w.publicAddress).FirstOrDefault();
+
+            if (walletAddress == null)
+            {
+                Wallet newWallet = _flipChain.CreateAndStoreWalletInDatabase(LoggedInUser.UserName, LoggedInUser.Email);
+                ViewBag.walletAddress = newWallet.publicAddress;
+                _notyf.Success($"Wallet {newWallet.publicAddress} created!");
+            }
+            else
+            {
+                ViewBag.newWalletAddress = $"Wallet for user {LoggedInUser.UserName} already exists.";
+                ViewBag.walletAddress = walletAddress;
+                _notyf.Error($"Wallet for user {LoggedInUser.UserName} already exists!");
+            }
+
+            var wallet = (from w in _context.Wallets
+                          where w.Username == LoggedInUser.UserName
+                          select w).FirstOrDefault();
+            return View("Wallet", wallet);
+        }
+
+        public async Task<IActionResult> DeleteWallet()
+        {
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
+            // Reference logged in User
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
+
+            var walletId = (
+                from w in _context.Wallets
+                where w.Username == LoggedInUser.UserName
+                select w.Id).FirstOrDefault();
+
+            var walletAddress = (
+                from w in _context.Wallets
+                where w.Username == LoggedInUser.UserName
+                select w.publicAddress).FirstOrDefault();
+
+            _flipChain.DeleteWalletFromDatabase(walletId);
+
+            var wallet = (from w in _context.Wallets
+                          where w.Username == LoggedInUser.UserName
+                          select w).FirstOrDefault();
 
             if (LoggedInUser != null)
             {
-                var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
-                var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
-                var account = new Account(privateKey); // Creation of Eth account + public key
-
-                if (LoggedInUser.WalletPrivateKey == null && LoggedInUser.EtheruemAddress == null)
-                {
-                    // Set private key of new Eth wallet
-                    LoggedInUser.WalletPrivateKey = privateKey;
-                    // Set public Eth address of logged in User
-                    LoggedInUser.EtheruemAddress = account.Address;
-
-                    ViewBag.Message = "";
-
-                    IdentityResult result = await _userManager.UpdateAsync(LoggedInUser);
-                    if (result.Succeeded)
-                        return RedirectToAction("Wallet", LoggedInUser);
-                    else
-                        Errors(result);
-                }
-                else
-                {
-                    ViewBag.WalletCreated = "There is already a Ethereum wallet created for this user.";
-                }
+                _notyf.Success($"Wallet {walletAddress} deleted!");
+                return View("Wallet", wallet);
             }
             else
-                ModelState.AddModelError("Wallet", "User Not Found");
-
-            return View("Wallet", LoggedInUser);
-        }
-
-        public async Task<Nethereum.RPC.Eth.DTOs.TransactionReceipt> TransferEther(string PrivateKey, string ToAddress, decimal EthAmount)
-        {
-            var account = new Account(PrivateKey);
-            var web3 = new Web3(account, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0"); // Web3 account in Eth test env
-            var transaction = await web3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(ToAddress, EthAmount);
-            
-            return transaction;
+                _notyf.Error($"Wallet {walletAddress} not deleted!");
+            return RedirectToAction("Wallet", "Wallet");
         }
 
         public IActionResult Index()
@@ -133,19 +133,92 @@ namespace Exchange_Art.Controllers
         // GET:
         // Wallet info of Logged-in User
         [Authorize]
-        public async Task<IActionResult> Wallet(string id)
+        public async Task<IActionResult> Wallet()
         {
-            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(id);
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
 
-            var UserId = _userManager.GetUserId(User);
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
 
-            // Check that the user that is trying to access the update profile page,
-            // is the correct user.
-            if (LoggedInUser.Id == UserId)
-                return View(LoggedInUser);
-            else
+            var wallet = (from w in _context.Wallets
+                          where w.Username == LoggedInUser.UserName
+                          select w).FirstOrDefault();
 
-                return RedirectToAction("Index");
+            ViewBag.walletAddress = _flipChain.GetWalletAddress(LoggedInUser.UserName);
+            return View("Wallet", wallet);
+        }
+
+        // GET:
+        // Wallet info of all Users
+        [Authorize]
+        public IActionResult ShowWallets()
+        {
+            var wallets = (from w in _context.Wallets
+                          select w).ToList();
+
+            return View(wallets);
+        }
+
+        // GET:
+        // Deposit page
+        [Authorize]
+        public IActionResult Deposit(int Id)
+        {
+            var wallet = (from w in _context.Wallets
+                          where w.Id == Id
+                          select w).FirstOrDefault();
+
+            WalletViewModel walletViewModel = new WalletViewModel
+            {
+                Id = wallet.Id,
+                Username = wallet.Username,
+                publicAddress = wallet.publicAddress
+            };
+
+            return View(walletViewModel);
+        }
+
+        public IActionResult DepositFunds(WalletViewModel wallet)
+        {
+
+            _flipChain.DepositFundsToWallet(wallet.publicAddress, wallet.Balance);
+
+            var walletObject = (from w in _context.Wallets
+                          where w.Id == wallet.Id
+                          select w).FirstOrDefault();
+
+            return View("Wallet", walletObject);
+        }
+
+        // GET:
+        // Withdraw page
+        [Authorize]
+        public IActionResult Withdraw(int Id)
+        {
+            var wallet = (from w in _context.Wallets
+                          where w.Id == Id
+                          select w).FirstOrDefault();
+
+            WalletViewModel walletViewModel = new WalletViewModel
+            {
+                Id = wallet.Id,
+                Username = wallet.Username,
+                publicAddress = wallet.publicAddress
+            };
+
+            return View(walletViewModel);
+        }
+
+        public IActionResult WithdrawFunds(WalletViewModel wallet)
+        {
+
+            _flipChain.WithdrawFundsFromWallet(wallet.publicAddress, wallet.Balance);
+
+            var walletObject = (from w in _context.Wallets
+                                where w.Id == wallet.Id
+                                select w).FirstOrDefault();
+
+            return View("Wallet", walletObject);
         }
 
         private void Errors(IdentityResult result)
@@ -154,5 +227,4 @@ namespace Exchange_Art.Controllers
                 ModelState.AddModelError("Wallet", error.Description);
         }
     }
-
 }

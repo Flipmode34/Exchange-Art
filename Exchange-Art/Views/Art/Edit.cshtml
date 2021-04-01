@@ -39,20 +39,17 @@
                 <span asp-validation-for="OwnerName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LeasePrice" class="control-label">Lease Price in Ether</label>
+                <label asp-for="LeasePrice" class="control-label">Lease Price</label>
                 <input type="text" asp-for="LeasePrice" class="form-control" />
-                <small class="form-text text-muted">In decimal, 3 digits before the comma.</small>
+                <small class="form-text text-muted">In decimal, 3 digits after the comma.</small>
                 <small class="form-text text-muted">For example: 0,300 or 1,400</small>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

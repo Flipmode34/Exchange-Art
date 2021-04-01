@@ -1,0 +1,72 @@
+﻿@model IEnumerable<Exchange_Art.Models.Transaction>
+
+@{ 
+    ViewBag.Title = "Transactions Overview";
+}
+
+<h1 class="bg-dark text-white rounded text-center">Transactions Overview</h1>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Transaction ID
+                </th>
+                <th>
+                    FromAddress
+                </th>
+                <th>
+                    ToAddress
+                </th>
+                <th>
+                    Amount
+                </th>
+                <th>
+                    TimeStamp
+                </th>
+                <th>
+                    Reward Transaction
+                </th>
+                <th>
+                    Processed
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model)
+            {
+            <tr>
+                <td>
+                    @transaction.Id
+                </td>
+                <td>
+                    @transaction.FromAddress
+                </td>
+                <td>
+                    @transaction.ToAddress
+                </td>
+                <td>
+                    @transaction.Amount
+                </td>
+                <td>
+                    @transaction.TimeStamp
+                </td>
+                <td>
+                    @transaction.RewardTrx
+                </td>
+                    @{
+                        if (transaction.Processed == true)
+                        {
+                            <td class="alert-success">@transaction.Processed</td>
+                        }
+                        else
+                        {
+                            <td class="alert-danger">@transaction.Processed</td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-primary" asp-action="ProcessPendingTransactions">Process Pending Transactions</a>
+</div>

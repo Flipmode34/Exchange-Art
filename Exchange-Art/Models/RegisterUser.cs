@@ -7,18 +7,25 @@ namespace Exchange_Art.Models
      * to be able to get a login form that just takes
      * a name, emailadres and password.
      */
-    public class User
+    public class RegisterUser
     {
 
         [Required]
         public string Name { get; set; }
 
         [Required]
-        [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "E-mail is not valid")]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "Password and confirmation password do not match")]
+        public string ConfirmPassword { get; set; }
 
     }
 }

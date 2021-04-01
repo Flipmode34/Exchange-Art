@@ -2,6 +2,10 @@
 
 @model IEnumerable<Exchange_Art.Models.Art>
 
+@{
+    ViewBag.Title = "Art Overview";
+}
+
 <h1 class="bg-dark text-white rounded text-center">Art Overview</h1>
 
 <div class="table-responsive">
@@ -45,9 +49,9 @@
                         </div>
                     </td>
                     <td>
-                        <a class="btn btn-link" asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a class="btn btn-link" asp-action="Lease" asp-route-id="@item.Id">Lease</a> |
-                        <a class="btn btn-link" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        <a class="btn btn-primary" asp-action="Lease" asp-route-id="@item.Id">Lease</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>
             }

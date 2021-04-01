@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Exchange_Art.Models;
+using Exchange_Art.Data;
 
 namespace Exchange_Art.Controllers
 {
@@ -13,11 +14,12 @@ namespace Exchange_Art.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
-
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        private readonly IFlipChain _flipChain;
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IFlipChain flipChain)
         {
             _logger = logger;
             _context = context;
+            _flipChain = flipChain;
         }
 
         public async Task<IActionResult> Index()

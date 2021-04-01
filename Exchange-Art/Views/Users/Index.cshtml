@@ -4,43 +4,41 @@
 @model IEnumerable<ApplicationUser>
 @inject UserManager<ApplicationUser> UserManager
 
+@{
+    ViewBag.Title = "Users Overview";
+}
+
 <h1 class="bg-dark text-white rounded text-center">All Users</h1>
 
 <div class="table-responsive">
     <table class="table table-sm table-hover">
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Public Eth Address</th>
-            <th>Role</th>
-            <th>Update</th>
-            <th>Delete</th>
-        </tr>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
         @foreach (ApplicationUser user in Model)
         {
             var AppUser = await UserManager.FindByIdAsync(user.Id);
             var roles = await UserManager.GetRolesAsync(AppUser);
-        <tr>
-            <td>@user.UserName</td>
-            <td>@user.Email</td>
-            <td>
-                @user.EtheruemAddress
-            </td>
-            @if (roles.Count == 0) // Role is set manually by Admin user
-            {
-                <td class="alert-danger">N.A.</td>
-            }
-            else
-            {
-                <td>@roles[0]</td>
-            }
-            <td>
-                <a class="btn btn-sm btn-primary" asp-action="Update" asp-route-id="@user.Id">Update</a>
-            </td>
-            <td>
-                <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
-            </td>
-        </tr>
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                @if (roles.Count == 0) // Role is set manually by Admin user
+                {
+                    <td class="alert-danger">N.A.</td>
+                }
+                else
+                {
+                    <td>@roles[0]</td>
+                }
+                <td>
+                    <a class="btn btn-sm btn-danger" asp-controller="Account" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                </td>
+            </tr>
         }
     </table>
 </div>
@@ -50,7 +48,7 @@
     var userName = this.User.FindFirstValue(ClaimTypes.Name);
     if (userName == "Admin")
     {
-        <a asp-action="Create" class="btn btn-primary">Create A User</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-primary">Create A User</a>
     }
     else
     {

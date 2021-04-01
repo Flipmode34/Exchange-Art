@@ -1,0 +1,22 @@
+﻿@model WalletViewModel
+
+@{
+    ViewBag.Title = "Withdraw funds";
+}
+
+<h1 class="bg-dark text-white rounded">Withdraw funds</h1>
+
+<form class="mt-3" asp-controller="Wallet" asp-action="WithdrawFunds" method="post">
+    <input hidden asp-for="Id" />
+    <input hidden asp-for="publicAddress" />
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label" asp-for="Balance">Amount</label>
+        <div class="col-sm-10">
+            <input class="form-control" asp-for="Balance" placeholder="Amount" />
+        </div>
+    </div>
+    <div>
+        <button class="btn btn-primary" type="submit">Withdraw</button>
+        <a class="btn btn-primary" asp-controller="Wallet" asp-action="Wallet">Go Back</a>
+    </div>
+</form>

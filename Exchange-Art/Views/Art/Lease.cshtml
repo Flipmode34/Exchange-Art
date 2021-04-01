@@ -1,8 +1,10 @@
 ﻿@model Exchange_Art.Models.Art
 
-<h2 class="bg-dark text-light rounded">Lease Art Piece</h2>
-<br />
+@{ 
+    ViewBag.Title = "ArtPiece Details";
+}
 
+<h2 class="bg-dark text-light rounded">Lease Art Piece</h2>
 <!--Single Art Image Table-->
 <div class="table-responsive">
     <table class="table">
@@ -43,7 +45,7 @@
                     @Model.OwnerName
                 </td>
                 <td>
-                    @Model.LeasePrice Ether
+                    @Model.LeasePrice
                 </td>
                 @{
                     if (Model.Leased == false)

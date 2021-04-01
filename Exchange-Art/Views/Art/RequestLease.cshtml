@@ -2,10 +2,11 @@
 
 @model Exchange_Art.Models.Art
 
+@{
+    ViewBag.Title = "Request Lease";
+}
+
 <h2 class="bg-dark text-white rounded text-center">Request Lease</h2>
-
-<br />
-
 <!--Single ArtImage Table-->
 <div class="table-responsive">
     <table class="table">
@@ -40,7 +41,7 @@
                     @Model.OwnerName
                 </td>
                 <td>
-                    @Model.LeasePrice Ether
+                    @Model.LeasePrice
                 </td>
                 @{
                     if (Model.Leased == false)
@@ -58,9 +59,7 @@
         </tbody>
     </table>
 </div>
-
 <hr />
-
 <div class="form-group">
     <form asp-action="RequestLease" asp-controller="Art" method="post">
         <div class="form-group">
@@ -70,23 +69,6 @@
                     <span class="input-group-text">ArtPieceId</span>
                 </div>
                 <input type="number" class="form-control" id="ArtPieceId" name="ArtPieceId" value="@Model.Id" readonly>
-            </div>
-            <br />
-            <!--Select period to Lease-->
-            <div>
-                <select class="custom-select-sm" id="ArtPeriod" name="ArtPeriod" required>
-                    <option selected>Select the amount of months</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
             </div>
             <!--Set Lease Requester, a hidden HTML element-->
             <div class="input-group" hidden>
@@ -108,17 +90,26 @@
                 </div>
                 <input type="text" class="form-control" id="LeaseAmount" name="LeaseAmount" value="@Model.LeasePrice" readonly>
             </div>
-            <br />
-            <button class="btn btn-primary" type="submit">Submit Lease request</button>
+            <!--Select period to Lease-->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <select class="custom-select-sm" id="ArtPeriod" name="ArtPeriod" required>
+                    <option selected>Select the amount of months</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Submit Lease Request</button>
+            </div>
         </div>
     </form>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-<br />
-<div class="alert-danger" role="alert">
-    <h1 class="alert-heading rounded">@ViewBag.Message</h1>
-</div>
-

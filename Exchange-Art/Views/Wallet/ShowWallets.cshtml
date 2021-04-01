@@ -1,0 +1,26 @@
+﻿@using Exchange_Art.Models
+@model IEnumerable<Wallet>
+
+@{
+    ViewBag.Title = "All Wallets";
+}
+
+<h1 class="bg-dark text-white rounded text-center">FlipCoin wallets</h1>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Wallet Address</th>
+            </tr>
+        </thead>
+        @foreach (Wallet wallet in Model)
+        {
+            <tr>
+                <td>@wallet.Username</td>
+                <td>@wallet.publicAddress</td>
+            </tr>
+        }
+    </table>
+</div>

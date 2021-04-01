@@ -26,12 +26,22 @@
                                 <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuLink">
                                     <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Art" asp-action="Index">Art Overview</a>
                                     <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Art" asp-action="Upload">Upload Art</a>
+                                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Art" asp-action="ShowBlocks">Blocks</a>
+                                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Art" asp-action="ShowTransactions">Transactions</a>
                                     <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Art" asp-action="Leases">Lease Overview</a>
                                 </div>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            <div class="dropdown show">
+                                <a class="btn btn-secondary dropdown-toggle bg-dark" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Users
+                                </a>
+                                <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuLink">
+                                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users Overview</a>
+                                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Wallet" asp-action="ShowWallets">Wallets Overview</a>
+                                </div>
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Role" asp-action="Index">Roles</a>
@@ -54,13 +64,14 @@
 
     <footer class="border-top footer text-muted bg-dark text-light">
         <div class="container">
-            &copy; 2020 - Verkiel Developments - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2021 - Verkiel Developments - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Component.InvokeAsync("Notyf")
     @RenderSection("Scripts", required: false)
 </body>
 </html>

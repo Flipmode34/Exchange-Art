@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Exchange_Art.Data;
 using Exchange_Art.Models;
 using Exchange_Art.IdentityPolicy;
+using AspNetCoreHero.ToastNotification;
+using AspNetCoreHero.ToastNotification.Extensions;
 
 namespace Exchange_Art
 {
@@ -35,6 +36,8 @@ namespace Exchange_Art
                 options.User.RequireUniqueEmail = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<IFlipChain, FlipChain>();
+
             services.AddTransient<IPasswordValidator<ApplicationUser>, CustomPasswordPolicy>();
 
             // Add Cookie expiration service
@@ -49,6 +52,12 @@ namespace Exchange_Art
             services.AddRazorPages();
 
             services.AddControllersWithViews();
+
+            services.AddNotyf(config => { 
+                config.DurationInSeconds = 6; 
+                config.IsDismissable = true; 
+                config.Position = NotyfPosition.TopRight; 
+            });
 
         }
 
@@ -74,6 +83,8 @@ namespace Exchange_Art
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseNotyf();
 
             app.UseEndpoints(endpoints =>
             {

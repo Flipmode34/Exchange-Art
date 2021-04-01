@@ -4,79 +4,37 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Exchange_Art.Models;
-using Exchange_Art.Data;
-using Nethereum.Hex.HexConvertors.Extensions;
-using Nethereum.Web3.Accounts;
 
 namespace Exchange_Art.Controllers
 {
     public class UsersController : Controller
     {
-        private UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
-        private IPasswordHasher<ApplicationUser> _passwordHash;
 
-        public UsersController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IPasswordHasher<ApplicationUser> passwordHash)
+        public UsersController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _context = context;
-            _passwordHash = passwordHash;
         }
 
         [Authorize]
         public IActionResult Index()
         {
-
             return View(_userManager.Users);
         }
 
         // GET:
-        // Create a new User
-        public ViewResult Create() => View();
-
-        // POST:
-        // Create a new User
-        [HttpPost]
-        public async Task<IActionResult> Create(User user)
-        {
-
-            var ecKey = Nethereum.Signer.EthECKey.GenerateKey();
-            var privateKey = ecKey.GetPrivateKeyAsBytes().ToHex();
-            var account = new Account(privateKey); // Creation of Eth account + public key
-
-            if (ModelState.IsValid)
-            {
-                // Here the data from the User class is used,
-                // to create an actual user from the ApplicationUser class,
-                // that derives from the IdentityUser class.
-                ApplicationUser appUser = new ApplicationUser
-                {
-                    UserName = user.Name,
-                    Email = user.Email,
-                    WalletPrivateKey = privateKey,
-                    EtheruemAddress = account.Address
-                };
-
-                IdentityResult result = await _userManager.CreateAsync(appUser, user.Password);
-                if (result.Succeeded)
-                    return RedirectToAction("Index");
-                else
-                {
-                    foreach (IdentityError error in result.Errors)
-                        ModelState.AddModelError("", error.Description);
-                }
-            }
-            return View(user);
-        }
-
-        // GET:
-        // Update a user page
+        // Your Art page
         [Authorize]
-        public async Task<IActionResult> Update(string id)
+        public async Task<IActionResult> YourArt()
         {
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
+
             ArtOwners artowner = new ArtOwners();
-            
-            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(id);
+
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
 
             artowner.ArtOwner = LoggedInUser;
 
@@ -86,86 +44,12 @@ namespace Exchange_Art.Controllers
                          select o;
             artowner.ArtPieces = owners;
 
-            System.Security.Claims.ClaimsPrincipal currentUser = this.User;
-            var UserId = _userManager.GetUserId(User);
-
-            // Check if ArtOwner object is not NULL and whether the user 
-            // that is trying to access the update profile page, is the correct user.
-            if (artowner != null && LoggedInUser.Id == UserId)
+            // Check if ArtOwner object is not NULL
+            if (artowner != null)
                 return View(artowner);
             else
 
                 return RedirectToAction("Index");
-        }
-
-        // POST:
-        // Update a user
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> Update(string id, string email, string password)
-        {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                if (!string.IsNullOrEmpty(email))
-                    user.Email = email;
-                else
-                    ModelState.AddModelError("", "Email cannot be empty");
-
-                if (!string.IsNullOrEmpty(password))
-                    user.PasswordHash = _passwordHash.HashPassword(user, password);
-                else
-                    ModelState.AddModelError("", "Password cannot be empty");
-
-                if (!string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(password))
-                {
-                    IdentityResult result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                        return RedirectToAction("Index");
-                    else
-                        Errors(result);
-                }
-            }
-            else
-                ModelState.AddModelError("", "User Not Found");
-            return View(user);
-        }
-
-        // GET: Users/Delete/23d3d-d3d3f-d33d2-d23f3-35geg
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
-        public async Task<IActionResult> Delete(string id)
-        {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-                return View(user);
-            else
-                return RedirectToAction("Index");
-        }
-
-        // POST:
-        // Delete a user
-        [HttpPost]
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            ApplicationUser user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-            {
-                IdentityResult result = await _userManager.DeleteAsync(user);
-                if (result.Succeeded)
-                    return RedirectToAction("Index");
-                else
-                    Errors(result);
-            }
-            else
-                ModelState.AddModelError("", "User Not Found");
-            return View("Index", _userManager.Users);
-        }
-
-        private void Errors(IdentityResult result)
-        {
-            foreach (IdentityError error in result.Errors)
-                ModelState.AddModelError("", error.Description);
         }
     }
 }

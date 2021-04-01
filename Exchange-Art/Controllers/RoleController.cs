@@ -105,10 +105,23 @@ namespace Exchange_Art.Controllers
                 return await Update(model.RoleId);
         }
 
+        // GET: Role/Delete/23d3d-d3d3f-d33d2-d23f3-35geg
+        [HttpGet]
+        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        public async Task<IActionResult> Delete(string Id)
+        {
+            IdentityRole role = await _roleManager.FindByIdAsync(Id);
+            if (role != null)
+                return View(role);
+            else
+                return RedirectToAction("Index");
+        }
+
+        // POST:
         // Delete a Role
         [HttpPost]
         [Authorize(Roles = Roles.ADMIN_ROLE)]
-        public async Task<IActionResult> Delete(string Id)
+        public async Task<IActionResult> DeleteConfirmed(string Id)
         {
             IdentityRole role = await _roleManager.FindByIdAsync(Id);
             if (role != null)

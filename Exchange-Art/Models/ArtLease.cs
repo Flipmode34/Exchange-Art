@@ -27,8 +27,7 @@ namespace Exchange_Art.Models
 
         public string DateLeaseEnds { get; set; }
 
-        [Column("LeaseAmount", TypeName = "decimal(18,3)")]
-        public decimal CryptoAmount { get; set; } // Change to INT (02092020)
+        public Transaction Transaction { get; set; }
 
         [ForeignKey("ApplicationUser"), Column("ArtOwner")]
         public string OwnerId { get; set; }

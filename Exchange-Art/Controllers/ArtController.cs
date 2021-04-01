@@ -8,23 +8,51 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Exchange_Art.Data;
 using Exchange_Art.Models;
-using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
 using System.Globalization;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace Exchange_Art.Controllers
 {
     public class ArtController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly INotyfService _notyf;
         private UserManager<ApplicationUser> _userManager;
-        private WalletController _walletController;
+        private IFlipChain _flipChain;
 
-        public ArtController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ArtController(ApplicationDbContext context, INotyfService notyf, UserManager<ApplicationUser> userManager, IFlipChain flipChain)
         {
             _context = context;
+            _notyf = notyf;
             _userManager = userManager;
-            _walletController = new WalletController();
+            _flipChain = flipChain;
+        }
+
+        private void CheckExpiredLeases()
+        {
+            var ArtLeases = (
+                from a in _context.ArtLease
+                select a).ToList();
+
+            var cultureInfo = new CultureInfo("fr-FR");
+            string currentDateString = DateTime.Now.ToString("dd/MM/yyyy");
+            DateTime currentDate = DateTime.Parse(currentDateString, cultureInfo, DateTimeStyles.NoCurrentDateDefault);
+
+            foreach (var artlease in ArtLeases)
+            {
+                var ArtDate = DateTime.Parse(artlease.DateLeaseEnds, cultureInfo, DateTimeStyles.NoCurrentDateDefault);
+                int result = DateTime.Compare(ArtDate, currentDate);
+                if (result < 0)
+                {
+                    _context.ArtLease.Remove(artlease); // Removes lease from database
+                    Art artPiece = (
+                        from ap in _context.Art
+                        where ap.Id == artlease.ArtId
+                        select ap).FirstOrDefault();
+                    artPiece.Leased = false; // Sets Leased boolean to false.
+                }
+            }
+            _context.SaveChanges();
         }
 
         // GET: Art/Index page
@@ -37,6 +65,18 @@ namespace Exchange_Art.Controllers
         public async Task<IActionResult> Leases()
         {
             return View(await _context.ArtLease.ToListAsync());
+        }
+
+        // GET: Art/ShowBlocks page
+        public async Task<IActionResult> ShowBlocks()
+        {
+            return View(await _context.Blocks.ToListAsync());
+        }
+
+        // GET: Art/ShowTransactions page
+        public async Task<IActionResult> ShowTransactions()
+        {
+            return View(await _context.Transactions.ToListAsync());
         }
 
         // GET: Art/Upload page
@@ -70,6 +110,8 @@ namespace Exchange_Art.Controllers
         [Authorize]
         public async Task<IActionResult> Lease(int? id)
         {
+            CheckExpiredLeases(); // Deletes a Lease if it is has expired.
+
             if (id == null)
             {
                 return NotFound();
@@ -234,61 +276,79 @@ namespace Exchange_Art.Controllers
                 return NotFound();
             }
 
-            // Convert string LeaseAmount back to decimal
-            NumberStyles style = NumberStyles.AllowDecimalPoint;
-            decimal dLeaseAmount = decimal.Parse(LeaseAmount, style); // Parse string to decimal
-
-            // Create ArtLease instance
-            ArtLease LeasedArt = new ArtLease();
-
-            // Fill in all required columns of ArtLease model (table)
-            LeasedArt.ArtId                 = ArtPieceId;
-            LeasedArt.ArtPieceImageData     = ArtPiece.ImageData;
-            LeasedArt.ArtDescription        = ArtPiece.ImageDescription;
-            LeasedArt.LeaserId              = LeaserId;
-            LeasedArt.LeaserName            = LeaserName;
-            LeasedArt.LeasePeriodInMonths   = ArtPeriod;
-            LeasedArt.DateLeaseStarted      = DateTime.Today.ToString("d");
-            LeasedArt.DateLeaseEnds         = DateTime.Today.AddMonths(ArtPeriod).ToString("d");
-            LeasedArt.CryptoAmount          = dLeaseAmount * ArtPeriod;
-            LeasedArt.OwnerId               = ArtPiece.UserId;
-            LeasedArt.OwnerName             = ArtPiece.OwnerName;
-
-            // Store ArtLease record in database
-            _context.ArtLease.Add(LeasedArt);
-
-            // Set boolean Leased to TRUE in ArtPiece requested for Lease (Art model (table))
-            ArtPiece.Leased = true;
-            
-            // Reference LeaseRequester and Owner of the ArtPiece
-            ApplicationUser LeaseRequester = await _userManager.FindByIdAsync(LeaserId);
-            ApplicationUser ArtOwner = await _userManager.FindByIdAsync(ArtPiece.UserId);
-
-            // Reference Ethereum account for balance checking
-            var LeaseRequesterAccount = new Account(LeaseRequester.WalletPrivateKey);
-            var web3 = new Web3(LeaseRequesterAccount, "https://ropsten.infura.io/v3/87f3fd59965241539d6721a231635ea0");
-            var etherBalance = await _walletController.GetAccountBalance(LeaseRequesterAccount); // Check Ethererum balance
-
-            if (etherBalance < LeasedArt.CryptoAmount)
+            if (ArtPiece.Leased == false) // If ArtPiece is not leased yet
             {
-                ViewBag.Message = $"Lease Request of Artpiece {ArtPiece.ImageTitle} denied, the Ethereum balance is to low: {etherBalance}";
-            }
-            else
-            {
-                // Exchange Ether LeaseAmount between the two Ethereum addresses
-                Nethereum.RPC.Eth.DTOs.TransactionReceipt transaction = await _walletController.TransferEther(
-                                        LeaseRequester.WalletPrivateKey,
-                                        ArtOwner.EtheruemAddress,
-                                        LeasedArt.CryptoAmount);
+                // Convert string LeaseAmount back to decimal
+                NumberStyles style = NumberStyles.AllowDecimalPoint;
+                decimal dLeaseAmount = decimal.Parse(LeaseAmount, style);
+                dLeaseAmount *= ArtPeriod;
+
+                // Create ArtLease object
+                ArtLease LeasedArt = new ArtLease
+                {
+                    // Fill in all required columns of ArtLease object (Transaction field will be done later)
+                    ArtId = ArtPieceId,
+                    ArtPieceImageData = ArtPiece.ImageData,
+                    ArtDescription = ArtPiece.ImageDescription,
+                    LeaserId = LeaserId,
+                    LeaserName = LeaserName,
+                    LeasePeriodInMonths = ArtPeriod,
+                    DateLeaseStarted = DateTime.Today.ToString("d"),
+                    DateLeaseEnds = DateTime.Today.AddMonths(ArtPeriod).ToString("d"),
+                    OwnerId = ArtPiece.UserId,
+                    OwnerName = ArtPiece.OwnerName
+                };
+
+                // Set boolean 'Leased' to TRUE in ArtPiece requested for Lease (Art model)
+                ArtPiece.Leased = true;
+
+                // Reference LeaseRequester and Owner of the ArtPiece
+                ApplicationUser LeaseRequester = await _userManager.FindByIdAsync(LeaserId);
+                ApplicationUser ArtOwner = await _userManager.FindByIdAsync(ArtPiece.UserId);
+
+                // Reference wallet addresses
+                string fromAddress = (
+                    from a in _context.Wallets
+                    where a.Username == LeaseRequester.UserName
+                    select a.publicAddress).FirstOrDefault();
+
+                string toAddress = (
+                    from a in _context.Wallets
+                    where a.Username == ArtOwner.UserName
+                    select a.publicAddress).FirstOrDefault();
+
+                // Create transaction and store it in the ArtLease object
+                LeasedArt.Transaction = _flipChain.CreateTransaction(fromAddress, toAddress, dLeaseAmount);
+
+                // Store ArtLease record in database
+                _context.ArtLease.Add(LeasedArt);
 
                 // Save changes to database
                 await _context.SaveChangesAsync();
 
                 // Send ViewBag message with LeaseRequest data back to View
-                ViewBag.Message = $"Lease Request of Artpiece {ArtPiece.ImageTitle} submitted for {LeasedArt.CryptoAmount} Ethereum.";
+                _notyf.Success("Lease request submitted!", 10);
+            }
+            else
+            {
+                _notyf.Error("Lease request failed, ArtPiece already taken!", 10);
             }
 
             return View(ArtPiece);
+        }
+
+        public async Task<IActionResult> CreateGenesisBlock()
+        {
+            _flipChain.AddGenesisBlock();
+
+            return View("ShowBlocks", await _context.Blocks.ToListAsync());
+        }
+
+        public async Task<IActionResult> ProcessPendingTransactions()
+        {
+            _flipChain.ProcessPendingTransactions();
+
+            return View("ShowTransactions", await _context.Transactions.ToListAsync());
         }
 
         // POST: Art/Upload

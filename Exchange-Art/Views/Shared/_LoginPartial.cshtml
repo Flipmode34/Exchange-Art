@@ -13,7 +13,8 @@
             <div class="dropdown show">
                 <a class="btn btn-secondary dropdown-toggle bg-dark text-light" data-toggle="dropdown" title="Update">Hello @User.Identity.Name!</a>
                 <div class="dropdown-menu bg-dark" aria-labelledby="dropdownMenuLink">
-                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Users" asp-action="Update" asp-route-id="@userId">Profile</a>
+                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Account" asp-action="ChangePassword" asp-route-id="@userId">Change Password</a>
+                    <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Users" asp-action="YourArt" asp-route-id="@userId">Your Art</a>
                     <a class="nav-link bg-dark text-light dropdown-item" asp-area="" asp-controller="Wallet" asp-action="Wallet" asp-route-id="@userId">Wallet</a>
                 </div>
             </div>
@@ -29,7 +30,7 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-light" asp-area="" asp-controller="Users" asp-action="Create">Register</a>
+            <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Login">Login</a>

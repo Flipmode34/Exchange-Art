@@ -29,14 +29,13 @@
                     </div>
                 </td>
                 <td>@Model.OwnerName</td>
-                <td>@Model.LeasePrice Ether</td>
+                <td>@Model.LeasePrice</td>
             </tr>
         </tbody>
     </table>
 </div>
 
 <div>
-    <a class="btn btn-link" asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
     <a class="btn btn-link" asp-action="Index">Back to List</a>
 </div>
-
