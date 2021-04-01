@@ -10,3 +10,4 @@ A web application that allows users to exchange Art pieces with eachother.
 
 ## Technologies
 * Microsoft .NET Core v3.1
+* * Bootstrap v4.0
