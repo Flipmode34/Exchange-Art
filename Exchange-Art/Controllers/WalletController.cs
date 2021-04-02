@@ -111,14 +111,18 @@ namespace Exchange_Art.Controllers
 
             _flipChain.DeleteWalletFromDatabase(walletId);
 
-            var wallet = (from w in _context.Wallets
-                          where w.Username == LoggedInUser.UserName
-                          select w).FirstOrDefault();
+            Wallet emptyWallet = new Wallet
+            {
+                Username = LoggedInUser.UserName,
+                Email = "NULL",
+                publicAddress = "NULL",
+                Balance = 0.000M
+            };
 
             if (LoggedInUser != null)
             {
                 _notyf.Success($"Wallet {walletAddress} deleted!");
-                return View("Wallet", wallet);
+                return View("Wallet", emptyWallet);
             }
             else
                 _notyf.Error($"Wallet {walletAddress} not deleted!");
@@ -140,11 +144,22 @@ namespace Exchange_Art.Controllers
 
             ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
 
-            var wallet = (from w in _context.Wallets
+            Wallet wallet = (from w in _context.Wallets
                           where w.Username == LoggedInUser.UserName
                           select w).FirstOrDefault();
 
-            ViewBag.walletAddress = _flipChain.GetWalletAddress(LoggedInUser.UserName);
+            if (wallet == null)
+            {
+                _flipChain.CreateAndStoreWalletInDatabase(LoggedInUser.UserName, LoggedInUser.Email);
+                wallet = (from w in _context.Wallets
+                              where w.Username == LoggedInUser.UserName
+                              select w).FirstOrDefault();
+            }
+            else
+            {
+                ViewBag.walletAddress = _flipChain.GetWalletAddress(LoggedInUser.UserName);
+            }
+
             return View("Wallet", wallet);
         }
 

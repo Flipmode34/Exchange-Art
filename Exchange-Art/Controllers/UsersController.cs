@@ -30,12 +30,10 @@ namespace Exchange_Art.Controllers
         public async Task<IActionResult> YourArt()
         {
             System.Security.Claims.ClaimsPrincipal currentUser = User;
-            var UserId = _userManager.GetUserId(currentUser);
-
-            ArtOwners artowner = new ArtOwners();
-
+            var UserId = _userManager.GetUserId(User);
             ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
 
+            ArtOwners artowner = new ArtOwners();
             artowner.ArtOwner = LoggedInUser;
 
             // Query for ArtOwners in 'Art' table

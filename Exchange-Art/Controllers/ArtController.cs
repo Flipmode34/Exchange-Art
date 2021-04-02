@@ -245,6 +245,10 @@ namespace Exchange_Art.Controllers
         [Authorize]
         public async Task<IActionResult> RequestLease(int? id)
         {
+            System.Security.Claims.ClaimsPrincipal currentUser = User;
+            var UserId = _userManager.GetUserId(currentUser);
+            ApplicationUser LoggedInUser = await _userManager.FindByIdAsync(UserId);
+            
             if (id == null)
             {
                 return NotFound();
@@ -257,7 +261,15 @@ namespace Exchange_Art.Controllers
                 return NotFound();
             }
 
-            return View(art);
+            if (art.OwnerName == LoggedInUser.UserName)
+            {
+                _notyf.Error("You cannot Lease your own Artpiece!");
+                return View("Lease", art);
+            }
+            else
+            {
+                return View(art);
+            }
         }
 
         // POST: RequestLease

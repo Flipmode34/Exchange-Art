@@ -13,12 +13,6 @@
     <Compile Remove="Areas\Identity\Pages\Account\Manage\Index.cshtml.cs" />
     <Compile Remove="Areas\Identity\Pages\Account\Manage\ManageNavPages.cs" />
     <Compile Remove="Areas\Identity\Pages\Account\Manage\PersonalData.cshtml.cs" />
-    <Compile Remove="Migrations\20200716214616_ChangedArtAndUserModels2.cs" />
-    <Compile Remove="Migrations\20200716214616_ChangedArtAndUserModels2.Designer.cs" />
-    <Compile Remove="Migrations\20200717121322_ArtLeaseModelAndArtModelUpdate.cs" />
-    <Compile Remove="Migrations\20200717121322_ArtLeaseModelAndArtModelUpdate.Designer.cs" />
-    <Compile Remove="Migrations\20200717121604_ArtLeaseModelAndArtModelUpdate.cs" />
-    <Compile Remove="Migrations\20200717121604_ArtLeaseModelAndArtModelUpdate.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

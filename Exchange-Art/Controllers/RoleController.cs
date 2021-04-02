@@ -27,13 +27,14 @@ namespace Exchange_Art.Controllers
         public ViewResult Index() => View(_roleManager.Roles);
 
         // GET:
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        [Authorize]
+        //[Authorize(Roles = Roles.ADMIN_ROLE)]
         public IActionResult Create() => View();
 
         // POST:
         // Create a role
         [HttpPost]
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        [Authorize]
         public async Task<IActionResult> Create([Required] string roleName)
         {
             if (ModelState.IsValid)
@@ -49,7 +50,7 @@ namespace Exchange_Art.Controllers
 
         // GET:
         // Update a role page
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        [Authorize]
         public async Task<IActionResult> Update(string id)
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
@@ -71,7 +72,7 @@ namespace Exchange_Art.Controllers
         // POST:
         // Update a role
         [HttpPost]
-        [Authorize(Roles = Roles.ADMIN_ROLE)]
+        [Authorize]
         public async Task<IActionResult> Update(RoleModification model)
         {
             IdentityResult result;
