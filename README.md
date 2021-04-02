@@ -28,7 +28,7 @@ Een webapplicatie om Kunstwerken uit te lenen tussen verschillende geregistreerd
 * Open de solution in Visual Studio Community
 * Open de Developer Powershell
 * Ga naar de Project directory middels dit commando: `cd .\Exchange-Art\`
-* Dubbelcheck dat he in de juiste directory zit: `ls`
+* Dubbelcheck dat je in de juiste directory zit: `ls`
 * Installeer dotnet indien nodig via de Developer Powershell in VS: `dotnet tool install`
 * Installeer dotnet ef tools via de Developer Powershell in VS: `dotnet tool install --global dotnet-ef`
 * Voer een Initieele migratie uit van het Model van de webapp via de Developer Powershell in VS: `dotnet ef migrations add InitialCreate`
