@@ -23,4 +23,14 @@ Een webapplicatie om Kunstwerken uit te lenen tussen verschillende geregistreerd
 * Het is mogelijk om cryptocurrency te storten en op te nemen (hetzij gesimuleert)
 
 ## Installatie
-TODO
+### Alleen getest op Windows met Visual Studio Community
+* Download ZIP file van solution vanaf deze pagina (groene knop genaamd " Code"
+* Open de solution in Visual Studio Community
+* Open de Developer Powershell
+* Ga naar de Project directory middels dit commando: `cd .\Exchange-Art\`
+* Dubbelcheck dat he in de juiste directory zit: `ls`
+* Installeer dotnet indien nodig via de Developer Powershell in VS: `dotnet tool install`
+* Installeer dotnet ef tools via de Developer Powershell in VS: `dotnet tool install --global dotnet-ef`
+* Voer een Initieele migratie uit van het Model van de webapp via de Developer Powershell in VS: `dotnet ef migrations add InitialCreate`
+* Update de database met de informatie van de InitialCreate migratie: `dotnet update database`
+* Start the app
