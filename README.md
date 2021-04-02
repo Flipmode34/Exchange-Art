@@ -33,4 +33,31 @@ Een webapplicatie om Kunstwerken uit te lenen tussen verschillende geregistreerd
 * Installeer dotnet ef tools via de Developer Powershell in VS: `dotnet tool install --global dotnet-ef`
 * Voer een Initieele migratie uit van het Model van de webapp via de Developer Powershell in VS: `dotnet ef migrations add InitialCreate`
 * Update de database met de informatie van de InitialCreate migratie: `dotnet update database`
-* Start the app
+* Start the app (Ik heb Kestrel gebruikt omdat ISS Express vaak niet werkte)
+
+## Gebruik
+* Login
+Je kunt inloggen middels de vooraf aangemaakt Users: Admin, teacher of Student
+Login (email): admin@novi.nl / teacher@novi.nl / student@novi.nl
+Passwords: Pas.@l1ve / Tea.@l1ve / Stu.@l1ve
+
+### Art uploaden
+In de map `Exchange-Art-master\Exchange-Art\wwwroot\images\` zijn tien plaatjes te vinden,
+die je kunt uploaden als Kunstwerk middels het menu in de webapp: `Art -> Upload Art`, je kunt ook eigen plaatjes gebruiken natuurlijk.
+Als het plaatje is geupload moet je het Kunstwerk een prijs per maand meegeven in de detail pagina van het Kunstwerk:  `Art -> Art Overview -> Details (van een plaatje)`
+
+De uploads zijn daarna te vinden in het 'Art Overview' via menu: `Art -> Art Overview`
+Middels die pagina kun je een LeaseRequest initieren door op de Lease knop te drukken en dan op 'Request Lease' (Je kunt niet je eigen kunstwerk lenen)
+Op de Request Lease pagina kun je de hoeveelheid maanden specifieren en het request submitten.
+
+### Art Leases
+Art Leases zijn terug te vinden op de Lease Overview pagina: `Art -> Lease Overview`
+Art Leases zijn alleen te verwijderen door user met de rol "Admin".
+Dit is aan te passen middels de 'Roles' pagina.
+Art Leases expireren ook als de Eind datum van de Lease ouder dan de huidige datum is. (Zie: ArtController.cs regel 113)
+
+### Betaling
+De betaling van het lenen gaat per 'FlipCoin', een simpele cryptocurrency die zijn gegevens in de database opslaat ipv een online ledger.
+Het verwerken van de FlipCoin transacties moet handmatig via de Transactions pagina: `Art -> Transactions` middels de knop 'Process Pending Transactions'.
+Er wordt dan een 'Block' aangemaakt met alle transacties die nog niet verwerkt zijn. Tevens wordt er na het aanmaken van het 'Block' een reward transactie gemaakt met de waarde van 1 FlipCoin en toegewezen aan een random Wallet adres in de database om het Minen te simuleren.
+## Zorg er wel voor dat er wallets aanwezig zijn voor beide users!
