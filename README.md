@@ -18,7 +18,7 @@ Een webapplicatie om Kunstwerken uit te lenen tussen verschillende geregistreerd
 * Kunstwerken kunnen worden uitgeleend tussen een periode van 3 tot 6 maanden
 * De eigenaar van het kunstwerk kan zelf de prijs bepalen
 * Transacies vinden plaats d.m.v. een cryptocurrency naar keuze
-* * Eigen simpele Cryptocoin gebruikt die niet van een PeertoPeer netwerk gebruik maakt maar het simuleert.
+* * Eigen simpele Cryptocoin gebruikt die niet van een PeertoPeer netwerk gebruik maakt maar het simuleert en de Blocks/Transactions opslaat in de database.
 * Na het registreren van de User is de wallet zelf aan te maken op de "Wallet" pagina van de User
 * Het is mogelijk om cryptocurrency te storten en op te nemen (hetzij gesimuleert)
 
